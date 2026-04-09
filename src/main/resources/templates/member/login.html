@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>따릉이 로그인</title>
+    <link rel="stylesheet" th:href="@{/css/member/login.css}">
+</head>
+<body>
+<main class="login-page">
+    <section class="login-shell" aria-labelledby="login-title">
+        <header class="brand-block">
+            <div class="brand-icon-box" aria-hidden="true">
+                <svg class="brand-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="22" r="5.2" stroke="currentColor" stroke-width="3"/>
+                    <circle cx="35" cy="22" r="5.2" stroke="currentColor" stroke-width="3"/>
+                    <path d="M12 22L18.8 12H25.5L30.2 22M20.4 12L24 22M24 12H34.4L29.7 5.8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M28.8 5.8H37.4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="brand-copy">
+                <h1 id="login-title">2025 서울시 따릉이</h1>
+                <p>이용 현황 분석 대시보드</p>
+            </div>
+        </header>
+
+        <section class="login-card" aria-label="로그인 카드">
+            <form class="login-form" th:action="@{/login}" method="post">
+                <div class="field-group">
+                    <label for="username">아이디</label>
+                    <div class="input-wrap">
+                        <span class="input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 19.5V18.4C17 17.28 17 16.72 16.78 16.292C16.5865 15.9123 16.2777 15.6035 15.898 15.41C15.47 15.188 14.91 15.188 13.79 15.188H10.21C9.09 15.188 8.53 15.188 8.102 15.41C7.72234 15.6035 7.41347 15.9123 7.22 16.292C7 16.72 7 17.28 7 18.4V19.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="8.5" r="3.5" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </span>
+                        <input id="username" name="username" type="text" placeholder="아이디를 입력하세요" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="password">비밀번호</label>
+                    <div class="input-wrap">
+                        <span class="input-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="5.5" y="10.5" width="13" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M8.5 10.5V8.5C8.5 6.567 10.067 5 12 5C13.933 5 15.5 6.567 15.5 8.5V10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M12 14V16.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <input id="password" name="password" type="password" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button class="login-button" type="submit">로그인</button>
+            </form>
+
+            <div class="login-links" aria-label="보조 링크">
+                <a href="#" onclick="return false;">회원가입</a>
+                <span class="link-dot" aria-hidden="true"></span>
+                <a href="#" onclick="return false;">비밀번호 찾기</a>
+            </div>
+        </section>
+
+        <footer class="login-footer">
+            <p>© 2025 Seoul Metropolitan Government.<br>All Data sourced from Seoul Public Data Portal.</p>
+            <div class="footer-badge">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M8.076 1.333C8.636 3.077 9.784 4.03 11.54 4.506C10.985 9.115 7.945 12.321 3.777 13.183C1.95 9.81 3.17 5.863 6.543 4.036C7.104 3.732 7.603 3.507 8.076 1.333Z" fill="currentColor"/>
+                </svg>
+                <span>친환경 도시 서울</span>
+            </div>
+        </footer>
+    </section>
+</main>
+</body>
+</html>
