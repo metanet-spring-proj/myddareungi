@@ -15,7 +15,6 @@ public interface IUploadFileRepository {
 	UploadFile getFile(long fileId);
 	
 	void deleteFile(long fileId);
-	String getUuid(long fileId);
 	void reviewFile(UploadFile file);
 	
 }

@@ -40,10 +40,6 @@ public class UploadFileService implements IUploadFileService {
 		uploadFileRepository.deleteFile(fileId);
 	}
 
-	@Override
-	public String getUuid(long fileId) {
-		return uploadFileRepository.getUuid(fileId);
-	}
 	
 	@Override
 	public void reviewFile(long fileId, String status, long reviewedBy) {

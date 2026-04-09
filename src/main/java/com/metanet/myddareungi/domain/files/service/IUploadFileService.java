@@ -11,6 +11,5 @@ public interface IUploadFileService {
 	List<UploadFile> getAllFilesByUploaderId(long uploaderId);
 
 	void deleteFile(long fileId);
-	String getUuid(long fileid);
 	void reviewFile(long fileId, String status, long reviewedBy);
 }

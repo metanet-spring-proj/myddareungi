@@ -119,11 +119,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</update>
 
-
-    <!-- UUID 파일명 조회 -->
-    <select id="getUuid" resultType="String">
-        SELECT uuid_file_name
-        FROM file_upload
-        WHERE file_id = #{fileId}
-    </select>
 </mapper>
