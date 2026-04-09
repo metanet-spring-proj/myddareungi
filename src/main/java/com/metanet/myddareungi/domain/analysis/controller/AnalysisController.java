@@ -1,5 +1,9 @@
 package com.metanet.myddareungi.domain.analysis.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -7,12 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.metanet.myddareungi.domain.analysis.dto.AnalysisPagedResponse;
 import com.metanet.myddareungi.domain.analysis.dto.AnalysisResponse;
 import com.metanet.myddareungi.domain.analysis.dto.AnalysisSearchRequest;
 import com.metanet.myddareungi.domain.analysis.service.IAnalysisService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -24,16 +29,54 @@ public class AnalysisController {
 
     @GetMapping("/search")
     public String searchAnalysis(
-            @ModelAttribute AnalysisSearchRequest request,
-            @RequestParam(value = "page", defaultValue = "1") int page,
+            @ModelAttribute("request") AnalysisSearchRequest request,
             Model model) {
-        request.setPage(page);
 
-        List<AnalysisResponse> result = analysisService.searchAnalysis(request);
+        if (request.getPage() == null || request.getPage() <= 0) {
+            request.setPage(1);
+        }
+        
+        System.out.println("========== 검색 필터 로그 ==========");
+        System.out.println("선택된 월(Month): " + request.getMonth());
+        System.out.println("선택된 구(District): " + request.getDistrict());
+        System.out.println("선택된 연령대(AgeGroup): " + request.getAgeGroup());
+        System.out.println("현재 페이지: " + request.getPage());
+        System.out.println("===================================");
 
-        model.addAttribute("result", result);
-        model.addAttribute("request", request);
+        AnalysisPagedResponse pagedResponse = analysisService.searchAnalysis(request);
 
+        model.addAttribute("result", pagedResponse.getContent());
+        model.addAttribute("totalElements", pagedResponse.getTotalElements());
+        model.addAttribute("totalPages", pagedResponse.getTotalPages());
+        model.addAttribute("currentPage", pagedResponse.getCurrentPage());
+        
         return "analysis/analysis";
+    }
+
+    @GetMapping("/export/csv")
+    public void exportCsv(
+            @ModelAttribute("request") AnalysisSearchRequest request,
+            HttpServletResponse response) throws IOException {
+
+        List<AnalysisResponse> allData = analysisService.listAllAnalysis(request);
+
+        String fileName = URLEncoder.encode("따릉이_통계_데이터.csv", StandardCharsets.UTF_8).replace("+", "%20");
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        try (PrintWriter writer = response.getWriter()) {
+            // Excel UTF-8 BOM
+            writer.write("\uFEFF");
+            writer.println("대여소 명,자치구,월,연령대,이용 건수");
+
+            for (AnalysisResponse row : allData) {
+                writer.printf("\"%s\",\"%s\",%d,\"%s\",%d%n",
+                        row.getStationName(),
+                        row.getDistrict(),
+                        row.getMonth(),
+                        row.getAgeGroup(),
+                        row.getTotalUseCnt());
+            }
+        }
     }
 }

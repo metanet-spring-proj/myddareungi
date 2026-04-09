@@ -10,4 +10,6 @@ import com.metanet.myddareungi.domain.analysis.dto.AnalysisSearchRequest;
 @Mapper
 public interface AnalysisRepository {
     List<AnalysisResult> searchAnalysis(AnalysisSearchRequest request);
+    int countSearchAnalysis(AnalysisSearchRequest request);
+    List<AnalysisResult> listAllAnalysis(AnalysisSearchRequest request);
 }
