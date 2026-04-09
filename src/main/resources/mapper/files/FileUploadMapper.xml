@@ -106,7 +106,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DELETE FROM file_upload
         WHERE file_id = #{fileId}
     </delete>
-
+    
+	<!-- 파일 승인/거절 -->
+	<update id="reviewFile" parameterType="com.metanet.myddareungi.domain.files.model.UploadFile">
+	    <![CDATA[
+	    UPDATE file_upload
+	    SET
+	        status = #{status},
+	        reviewed_by = #{reviewedBy},
+	        reviewed_at = CURRENT_TIMESTAMP
+	    WHERE file_id = #{fileId}
+	    ]]>
+	</update>
 
 
     <!-- UUID 파일명 조회 -->

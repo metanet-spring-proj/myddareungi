@@ -13,7 +13,7 @@ public class UploadFile {
 	String storagePath;
 	long fileSize;
 	String status;
-	String reviewedBy;
+	long reviewedBy;
 	Timestamp reviewedAt;
 	Timestamp uploadAt;
 }	

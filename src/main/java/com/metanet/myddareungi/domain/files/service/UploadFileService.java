@@ -44,6 +44,19 @@ public class UploadFileService implements IUploadFileService {
 	public String getUuid(long fileId) {
 		return uploadFileRepository.getUuid(fileId);
 	}
+	
+	@Override
+	public void reviewFile(long fileId, String status, long reviewedBy) {
+	    UploadFile file = uploadFileRepository.getFile(fileId);
+	    if (!status.equals("APPROVED") && !status.equals("REJECTED")) {
+	        throw new IllegalArgumentException("유효하지 않은 상태값입니다.");
+	    }
+	    
+	    file.setStatus(status);
+	    file.setReviewedBy(reviewedBy);
+	    
+	    uploadFileRepository.reviewFile(file);
+	}
 
 
 }

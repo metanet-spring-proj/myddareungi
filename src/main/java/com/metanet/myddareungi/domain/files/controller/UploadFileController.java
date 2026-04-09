@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -18,8 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +44,14 @@ public class UploadFileController {
 			if (file.isEmpty()) {
 				return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
 			}
-
+			
 			String originalFileName = file.getOriginalFilename();
 			String fileExt = originalFileName.substring(originalFileName.lastIndexOf("."));
+			
+			if (!fileExt.equals(".csv")) {
+			    return ResponseEntity.badRequest().body("CSV 파일만 업로드 가능합니다.");
+			}
+			
 			UUID uuid = UUID.randomUUID();
 			String savedFileName = uuid + fileExt;
 
@@ -55,7 +61,7 @@ public class UploadFileController {
 
 			UploadFile uploadFile = new UploadFile();
 			//			uploadFile.setUploaderId(principal.getName()); // 로그인 사용자 ID
-			uploadFile.setUploaderId(1);
+			uploadFile.setUploaderId(41);
 			uploadFile.setFileName(originalFileName);
 			uploadFile.setUuidFileName(savedFileName);
 			uploadFile.setStoragePath(uploadDir);
@@ -77,6 +83,18 @@ public class UploadFileController {
 	public ResponseEntity<List<UploadFile>> getAllFile() {
 		List<UploadFile> fileList = uploadFileService.getAllFile();
 		return ResponseEntity.ok(fileList);
+	}
+	
+	@GetMapping("/my")
+	public ResponseEntity<List<UploadFile>> getMyFiles() {
+	    // TODO: JWT 구현 후 토큰에서 추출한 userId로 교체
+		// JWT 적용 후 교체할 코드
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		long userId = ((CustomUserDetails) auth.getPrincipal()).getUserId();
+	    long mockUserId = 41;
+	    
+	    List<UploadFile> fileList = uploadFileService.getAllFilesByUploaderId(mockUserId);
+	    return ResponseEntity.ok(fileList);
 	}
 
 	@GetMapping("/{fileId}/downloads")
@@ -147,7 +165,26 @@ public class UploadFileController {
                     .body("파일 삭제 실패");
         }
     }
-
+	
+	@PatchMapping("/{fileId}/review")
+	public ResponseEntity<?> reviewFile(
+	        @PathVariable long fileId,
+	        @RequestParam String status) {
+	    try {
+	        // TODO: JWT 구현 후 토큰에서 추출한 adminId로 교체
+	        long mockAdminId = 42;
+	        
+	        uploadFileService.reviewFile(fileId, status, mockAdminId);
+	        return ResponseEntity.ok("파일 " + status + " 처리 완료");
+	        
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("파일 검토 처리 실패");
+	    }
+	}
 
 
 
