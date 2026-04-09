@@ -25,9 +25,14 @@
         </header>
 
         <section class="login-card" aria-label="로그인 카드">
-            <form class="login-form" th:action="@{/login}" method="post">
+            <div class="login-message error-message" th:if="${param.error}">
+                로그인 아이디 또는 비밀번호를 다시 확인해주세요.
+            </div>
+
+            <form class="login-form" th:action="@{/api/v1/auth/login}" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <div class="field-group">
-                    <label for="username">아이디</label>
+                    <label for="loginId">아이디</label>
                     <div class="input-wrap">
                         <span class="input-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +40,7 @@
                                 <circle cx="12" cy="8.5" r="3.5" stroke="currentColor" stroke-width="2"/>
                             </svg>
                         </span>
-                        <input id="username" name="username" type="text" placeholder="아이디를 입력하세요" autocomplete="username">
+                        <input id="loginId" name="loginId" type="text" placeholder="아이디를 입력하세요" autocomplete="username">
                     </div>
                 </div>
 
