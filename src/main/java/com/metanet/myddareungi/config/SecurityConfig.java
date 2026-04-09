@@ -32,4 +32,11 @@ public class SecurityConfig {
 
 		return http.build();
 	}
+  
+//    로컬 개발시 모든 경로 security 허용
+//    @Bean
+//    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+//        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+//        return http.build();
+//    }
 }

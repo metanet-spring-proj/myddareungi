@@ -49,7 +49,7 @@ build/
 
 # Sensitive Files
 application.properties
-
+*.properties
 
 # OS
 .DS_Store

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "../mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.metanet.myddareungi.domain.dashboard.repository.DashboardRepository">
+	<!-- KPI -->
+	<select id="selectLatestKpi"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeKpi">
+		SELECT
+		total_use_count,
+		total_carbon_saved,
+		total_station_count,
+		avg_use_time,
+		top_district,
+		created_at
+		FROM bike_kpi
+		ORDER BY created_at DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 월별 집계 -->
+	<select id="selectMonthlySummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeMonthlySummary">
+		SELECT
+		id,
+		month,
+		total_use_cnt,
+		total_station_cnt,
+		created_at
+		FROM bike_monthly_summary
+		ORDER BY month ASC
+	</select>
+
+	<!-- 요일별 집계 -->
+	<select id="selectWeekdaySummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeWeekdaySummary">
+		SELECT
+		id,
+		month,
+		weekday,
+		total_use_cnt,
+		created_at
+		FROM bike_weekday_summary
+		ORDER BY
+		CASE weekday
+		WHEN '월' THEN 1
+		WHEN '화' THEN 2
+		WHEN '수' THEN 3
+		WHEN '목' THEN 4
+		WHEN '금' THEN 5
+		WHEN '토' THEN 6
+		WHEN '일' THEN 7
+		ELSE 99
+		END
+	</select>
+
+	<!-- 연령대별 집계 -->
+	<select id="selectAgeGroupSummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeAgeGroupSummary">
+		SELECT
+		id,
+		month,
+		age_group,
+		total_use_cnt,
+		created_at
+		FROM bike_age_group_summary
+		ORDER BY
+		CASE age_group
+		WHEN '~10대' THEN 1
+		WHEN '20대' THEN 2
+		WHEN '30대' THEN 3
+		WHEN '40대' THEN 4
+		WHEN '50대' THEN 5
+		WHEN '60대' THEN 6
+		WHEN '70대~' THEN 7
+		ELSE 99
+		END
+	</select>
+
+	<!-- 자치구별 집계 -->
+	<select id="selectDistrictSummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeDistrictSummary">
+		SELECT
+		id,
+		month,
+		district,
+		total_use_cnt,
+		created_at
+		FROM bike_district_summary
+		ORDER BY total_use_cnt DESC
+	</select>
+
+</mapper>
