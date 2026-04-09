@@ -34,9 +34,9 @@ public class DashboardService implements IDashboardService {
         BikeKpi bikeKpi = dashboardRepository.selectLatestKpi();
 
         BikeKpiSummaryResponseDto responseDto = new BikeKpiSummaryResponseDto();
-        responseDto.setTotalUseCount(bikeKpi.getTotalUseCnt());
+        responseDto.setTotalUseCnt(bikeKpi.getTotalUseCnt());
         responseDto.setTotalCarbonSaved(bikeKpi.getTotalCarbonSaved());
-        responseDto.setTotalStationCount(bikeKpi.getTotalStationCnt());
+        responseDto.setTotalStationCnt(bikeKpi.getTotalStationCnt());
         responseDto.setAvgUseTime(bikeKpi.getAvgUseTime());
         responseDto.setTopDistrict(bikeKpi.getTopDistrict());
 System.out.println();
