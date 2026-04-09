@@ -3,7 +3,7 @@ package com.metanet.myddareungi.domain.dashboard.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseDto;
@@ -29,6 +29,7 @@ public class DashboardService implements IDashboardService {
 
     private final DashboardRepository dashboardRepository;
 
+    @Cacheable("kpi")
     @Override
     public BikeKpiSummaryResponseDto getKpi() {
         BikeKpi bikeKpi = dashboardRepository.selectLatestKpi();
@@ -43,6 +44,7 @@ System.out.println();
         return responseDto;
     }
 
+    @Cacheable("monthlySummary")
     @Override
     public BikeMonthlySummaryResponseDto getMonthlySummary() {
         List<BikeMonthlySummary> monthlySummaryList = dashboardRepository.selectMonthlySummaryList();
@@ -65,6 +67,7 @@ System.out.println();
         return responseDto;
     }
 
+    @Cacheable("weekdaySummary")
     @Override
     public BikeWeekdaySummaryResponseDto getWeekDaySummary() {
         List<BikeWeekdaySummary> weekdaySummaryList = dashboardRepository.selectWeekdaySummaryList();
@@ -84,6 +87,7 @@ System.out.println();
         return responseDto;
     }
 
+    @Cacheable("ageGroupSummary")
     @Override
     public BikeAgeGroupSummaryResponseDto getAgeGroupSummary() {
         List<BikeAgeGroupSummary> ageGroupSummaryList = dashboardRepository.selectAgeGroupSummaryList();
@@ -103,6 +107,7 @@ System.out.println();
         return responseDto;
     }
 
+    @Cacheable("districtSummary")
     @Override
     public BikeDistrictSummaryResponseDto getDistrictSummary() {
         List<BikeDistrictSummary> districtSummaryList = dashboardRepository.selectDistrictSummaryList();
@@ -122,6 +127,7 @@ System.out.println();
         return responseDto;
     }
     
+    @Cacheable("rentTypeSummary")
     @Override
     public BikeRentTypeSummaryResponseDto getRentTypeSummary() {
         List<BikeRentTypeSummary> list = dashboardRepository.selectRentTypeSummaryList();
