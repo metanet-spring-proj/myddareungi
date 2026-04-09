@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class BikeKpi {
-    private Long totalUseCount;
+    private Long totalUseCnt;        
     private BigDecimal totalCarbonSaved;
-    private Long totalStationCount;
+    private Long totalStationCnt;   
     private BigDecimal avgUseTime;
     private String topDistrict;
     private LocalDateTime createdAt;
