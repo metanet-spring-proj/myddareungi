@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "../mybatis-3-mapper.dtd">
+
+<mapper namespace="com.metanet.myddareungi.domain.analysis.repository.AnalysisRepository">
+
+    <select id="searchAnalysis" resultType="AnalysisResult">
+        SELECT *
+        FROM (
+            SELECT 
+                station_name AS stationName,
+                district AS district,
+                MONTH AS month,
+                age_group AS ageGroup,
+                total_use_cnt AS totalUseCnt, -- 이미 SUM 된 결과이므로 그대로 가져옴
+                ROW_NUMBER() OVER (ORDER BY total_use_cnt DESC) AS rn
+            FROM bike_usage_stats  <where>
+                <if test="month != null"> AND MONTH = #{month} </if>
+                <if test="district != null and district.size() > 0">
+                    AND district IN 
+                    <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
+                </if>
+                </where>
+        )
+        WHERE rn BETWEEN #{startRow} AND #{endRow}
+    </select>
+
+</mapper>
