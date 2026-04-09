@@ -9,6 +9,7 @@ import com.metanet.myddareungi.domain.dashboard.model.BikeAgeGroupSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeDistrictSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeKpi;
 import com.metanet.myddareungi.domain.dashboard.model.BikeMonthlySummary;
+import com.metanet.myddareungi.domain.dashboard.model.BikeRentTypeSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeWeekdaySummary;
 
 @Mapper
@@ -24,4 +25,6 @@ public interface DashboardRepository {
     List<BikeAgeGroupSummary> selectAgeGroupSummaryList();
 
     List<BikeDistrictSummary> selectDistrictSummaryList();
+    
+    List<BikeRentTypeSummary> selectRentTypeSummaryList();
 }
