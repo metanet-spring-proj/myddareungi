@@ -138,6 +138,19 @@ body {
     gap: 24px;
 }
 
+.login-message {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+.error-message {
+    background: #fff1f2;
+    color: #b42318;
+}
+
 .field-group {
     display: flex;
     flex-direction: column;
