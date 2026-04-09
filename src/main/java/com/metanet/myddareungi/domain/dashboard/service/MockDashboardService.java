@@ -10,6 +10,7 @@ import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseD
 import com.metanet.myddareungi.domain.dashboard.dto.BikeDistrictSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeKpiSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeMonthlySummaryResponseDto;
+import com.metanet.myddareungi.domain.dashboard.dto.BikeRentTypeSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeWeekdaySummaryResponseDto;
 
 @Service
@@ -63,6 +64,14 @@ public class MockDashboardService implements IDashboardService {
                 9800L, 9100L, 8700L, 8300L, 7900L,
                 7200L, 6900L, 6500L, 6100L, 5800L
         ));
+        return dto;
+    }
+    
+    @Override
+    public BikeRentTypeSummaryResponseDto getRentTypeSummary() {
+        BikeRentTypeSummaryResponseDto dto = new BikeRentTypeSummaryResponseDto();
+        dto.setRentTypeList(Arrays.asList("정기권", "일일권", "단체권", "기타"));
+        dto.setUseCountList(Arrays.asList(18500L, 9200L, 2100L, 800L));
         return dto;
     }
 }

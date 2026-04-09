@@ -4,6 +4,7 @@ let monthlyChart;
 let weekdayChart;
 let ageGroupChart;
 let districtChart;
+let rentTypeChart;
 
 document.addEventListener("DOMContentLoaded", async function() {
     try {
@@ -12,6 +13,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         await loadWeekdayChart();
         await loadAgeGroupChart();
         await loadDistrictChart();
+		await loadRentTypeChart();
+		
     } catch (e) {
         console.error("대시보드 로딩 실패", e);
         alert("대시보드 데이터를 불러오지 못했습니다.");
@@ -173,6 +176,37 @@ async function loadDistrictChart() {
             maintainAspectRatio: false,
             scales: {
                 x: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+async function loadRentTypeChart() {
+    const data = await fetchJson(`${DASHBOARD_API_BASE_URL}/rent-type-summary`);
+    const ctx = document.getElementById("rentTypeChart");
+
+    if (rentTypeChart) {
+        rentTypeChart.destroy();
+    }
+
+    rentTypeChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: data.rentTypeList,
+            datasets: [
+                {
+                    label: "이용건수",
+                    data: data.useCountList
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
                     beginAtZero: true
                 }
             }

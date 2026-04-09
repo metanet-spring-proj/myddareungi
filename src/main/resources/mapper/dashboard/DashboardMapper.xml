@@ -90,4 +90,17 @@
 		ORDER BY total_use_cnt DESC
 	</select>
 
+	<!-- 이용권 종류별 집계 -->
+	<select id="selectRentTypeSummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeRentTypeSummary">
+		SELECT
+		id,
+		month,
+		rent_type,
+		total_use_cnt,
+		created_at
+		FROM bike_rent_type_summary
+		ORDER BY total_use_cnt DESC
+	</select>
+
 </mapper>

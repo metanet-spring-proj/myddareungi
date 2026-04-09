@@ -10,26 +10,28 @@ import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseD
 import com.metanet.myddareungi.domain.dashboard.dto.BikeDistrictSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeKpiSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeMonthlySummaryResponseDto;
+import com.metanet.myddareungi.domain.dashboard.dto.BikeRentTypeSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeWeekdaySummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.model.BikeAgeGroupSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeDistrictSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeKpi;
 import com.metanet.myddareungi.domain.dashboard.model.BikeMonthlySummary;
+import com.metanet.myddareungi.domain.dashboard.model.BikeRentTypeSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeWeekdaySummary;
 import com.metanet.myddareungi.domain.dashboard.repository.DashboardRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
-//@Profile("dev")
+@Profile("dev")
 @RequiredArgsConstructor
 public class DashboardService implements IDashboardService {
 
-    private final DashboardRepository dashoardRepository;
+    private final DashboardRepository dashboardRepository;
 
     @Override
     public BikeKpiSummaryResponseDto getKpi() {
-        BikeKpi bikeKpi = dashoardRepository.selectLatestKpi();
+        BikeKpi bikeKpi = dashboardRepository.selectLatestKpi();
 
         BikeKpiSummaryResponseDto responseDto = new BikeKpiSummaryResponseDto();
         responseDto.setTotalUseCount(bikeKpi.getTotalUseCount());
@@ -43,7 +45,7 @@ public class DashboardService implements IDashboardService {
 
     @Override
     public BikeMonthlySummaryResponseDto getMonthlySummary() {
-        List<BikeMonthlySummary> monthlySummaryList = dashoardRepository.selectMonthlySummaryList();
+        List<BikeMonthlySummary> monthlySummaryList = dashboardRepository.selectMonthlySummaryList();
 
         List<String> monthList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -65,7 +67,7 @@ public class DashboardService implements IDashboardService {
 
     @Override
     public BikeWeekdaySummaryResponseDto getWeekDaySummary() {
-        List<BikeWeekdaySummary> weekdaySummaryList = dashoardRepository.selectWeekdaySummaryList();
+        List<BikeWeekdaySummary> weekdaySummaryList = dashboardRepository.selectWeekdaySummaryList();
 
         List<String> weekdayList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -84,7 +86,7 @@ public class DashboardService implements IDashboardService {
 
     @Override
     public BikeAgeGroupSummaryResponseDto getAgeGroupSummary() {
-        List<BikeAgeGroupSummary> ageGroupSummaryList = dashoardRepository.selectAgeGroupSummaryList();
+        List<BikeAgeGroupSummary> ageGroupSummaryList = dashboardRepository.selectAgeGroupSummaryList();
 
         List<String> ageGroupList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -103,7 +105,7 @@ public class DashboardService implements IDashboardService {
 
     @Override
     public BikeDistrictSummaryResponseDto getDistrictSummary() {
-        List<BikeDistrictSummary> districtSummaryList = dashoardRepository.selectDistrictSummaryList();
+        List<BikeDistrictSummary> districtSummaryList = dashboardRepository.selectDistrictSummaryList();
 
         List<String> districtList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -118,5 +120,24 @@ public class DashboardService implements IDashboardService {
         responseDto.setUseCountList(useCountList);
 
         return responseDto;
+    }
+    
+    @Override
+    public BikeRentTypeSummaryResponseDto getRentTypeSummary() {
+        List<BikeRentTypeSummary> list = dashboardRepository.selectRentTypeSummaryList();
+
+        List<String> rentTypeList = new ArrayList<>();
+        List<Long> useCountList = new ArrayList<>();
+
+        for (BikeRentTypeSummary item : list) {
+            rentTypeList.add(item.getRentType());
+            useCountList.add(item.getTotalUseCnt());
+        }
+
+        BikeRentTypeSummaryResponseDto dto = new BikeRentTypeSummaryResponseDto();
+        dto.setRentTypeList(rentTypeList);
+        dto.setUseCountList(useCountList);
+
+        return dto;
     }
 }
