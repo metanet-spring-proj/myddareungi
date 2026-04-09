@@ -3,7 +3,8 @@ const DASHBOARD_API_BASE_URL = "/api/v1/dashboard";
 let monthlyChart;
 let weekdayChart;
 let ageGroupChart;
-let districtChart;
+let districtMap;
+let districtGeoJsonLayer;
 let rentTypeChart;
 
 document.addEventListener("DOMContentLoaded", async function() {
@@ -12,9 +13,9 @@ document.addEventListener("DOMContentLoaded", async function() {
         await loadMonthlyChart();
         await loadWeekdayChart();
         await loadAgeGroupChart();
-        await loadDistrictChart();
-		await loadRentTypeChart();
-		
+        await loadDistrictMap();
+        await loadRentTypeChart();
+
     } catch (e) {
         console.error("대시보드 로딩 실패", e);
         alert("대시보드 데이터를 불러오지 못했습니다.");
@@ -151,37 +152,94 @@ async function loadAgeGroupChart() {
     });
 }
 
-async function loadDistrictChart() {
+// 자치구별 이용 현황
+async function loadDistrictMap() {
     const data = await fetchJson(`${DASHBOARD_API_BASE_URL}/district-summary`);
-    const ctx = document.getElementById("districtChart");
 
-    if (districtChart) {
-        districtChart.destroy();
+    const districtUsageMap = {};
+    data.districtList.forEach((district, index) => {
+        districtUsageMap[district] = data.useCountList[index];
+    });
+
+    const values = Object.values(districtUsageMap);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    if (districtMap) {
+        districtMap.remove();
     }
 
-    districtChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: data.districtList,
-            datasets: [
-                {
-                    label: "이용건수",
-                    data: data.useCountList
-                }
-            ]
+	// 서울 벗어나지 않도록 설정
+	const seoulBounds = [
+	    [37.413, 126.734],
+	    [37.715, 127.269],
+	];
+
+	districtMap = L.map("districtMap", {
+	    maxBounds: seoulBounds,
+	    maxBoundsViscosity: 1.0,
+	    minZoom: 10,
+	    maxZoom: 11,
+	    zoomControl: true,
+	    attributionControl: true
+	}).setView([37.5665, 126.9780], 11);
+
+  /*  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(districtMap);*/
+
+    const response = await fetch("/geojson/seoul_districts.geojson");
+    if (!response.ok) {
+        throw new Error("GeoJSON 로드 실패");
+    }
+
+    const geojson = await response.json();
+
+    districtGeoJsonLayer = L.geoJSON(geojson, {
+        style: function(feature) {
+            const districtName = getDistrictName(feature);
+            const value = districtUsageMap[districtName];
+
+            return {
+                fillColor: getColor(value, min, max),
+                weight: 2,
+                color: "#ffffff",
+                fillOpacity: 0.85
+            };
         },
-        options: {
-            indexAxis: "y",
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    beginAtZero: true
+        onEachFeature: function(feature, layer) {
+            const districtName = getDistrictName(feature);
+            const value = districtUsageMap[districtName] ?? 0;
+
+            layer.bindTooltip(
+                `<strong>${districtName}</strong><br>이용건수: ${formatNumber(value)}건`,
+                { sticky: true }
+            );
+
+            layer.on({
+                mouseover: function(e) {
+                    e.target.setStyle({
+                        weight: 3,
+                        color: "#111827",
+                        fillOpacity: 0.95
+                    });
+                    e.target.bringToFront();
+                },
+                mouseout: function(e) {
+                    districtGeoJsonLayer.resetStyle(e.target);
                 }
-            }
+            });
         }
-    });
+    }).addTo(districtMap);
+
+    districtMap.fitBounds(districtGeoJsonLayer.getBounds());
+
+    setTimeout(() => {
+        districtMap.invalidateSize();
+    }, 300);
 }
+
+
 
 async function loadRentTypeChart() {
     const data = await fetchJson(`${DASHBOARD_API_BASE_URL}/rent-type-summary`);
@@ -228,4 +286,29 @@ function formatDecimal(value) {
     return new Intl.NumberFormat("ko-KR", {
         maximumFractionDigits: 2
     }).format(value);
+}
+
+
+function getDistrictName(feature) {
+    return (
+        feature.properties.SIG_KOR_NM ||
+        feature.properties.name ||
+        feature.properties.SIGUNGU_NM ||
+        feature.properties.sigungu_nm ||
+        ""
+    );
+}
+
+function getColor(value, min, max) {
+    if (value == null) {
+        return "#e5e7eb";
+    }
+
+    const ratio = (value - min) / ((max - min) || 1);
+
+    if (ratio > 0.85) return "#0b3c8c";
+    if (ratio > 0.65) return "#2563eb";
+    if (ratio > 0.45) return "#60a5fa";
+    if (ratio > 0.25) return "#93c5fd";
+    return "#dbeafe";
 }

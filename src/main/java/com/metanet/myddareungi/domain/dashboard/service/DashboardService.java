@@ -23,7 +23,7 @@ import com.metanet.myddareungi.domain.dashboard.repository.DashboardRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Profile("dev")
+//@Profile("dev")
 @RequiredArgsConstructor
 public class DashboardService implements IDashboardService {
 
@@ -39,7 +39,7 @@ public class DashboardService implements IDashboardService {
         responseDto.setTotalStationCount(bikeKpi.getTotalStationCount());
         responseDto.setAvgUseTime(bikeKpi.getAvgUseTime());
         responseDto.setTopDistrict(bikeKpi.getTopDistrict());
-
+System.out.println();
         return responseDto;
     }
 
