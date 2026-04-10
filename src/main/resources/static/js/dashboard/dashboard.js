@@ -36,13 +36,20 @@ function xhrGet(url) {
         xhr.send();
     });
 }
+//숫자 K,M으로 표시
+function formatKpi(value) {
+    if (value == null) return "-";
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+    if (value >= 1_000) return (value / 1_000).toFixed(1) + "K";
+    return value.toString();
+}
 
 async function loadKpi() {
     const data = await xhrGet(`${DASHBOARD_API_BASE_URL}/kpi`);
 
-    document.getElementById("totalUseCnt").textContent = formatNumber(data.totalUseCnt);
-    document.getElementById("totalCarbonSaved").textContent = formatDecimal(data.totalCarbonSaved);
-    document.getElementById("totalStationCnt").textContent = formatNumber(data.totalStationCnt);
+    document.getElementById("totalUseCnt").textContent = formatKpi(data.totalUseCnt);
+    document.getElementById("totalCarbonSaved").textContent = formatKpi(data.totalCarbonSaved);
+    document.getElementById("totalStationCnt").textContent = formatKpi(data.totalStationCnt);
     document.getElementById("avgUseTime").textContent = formatDecimal(data.avgUseTime);
     document.getElementById("topDistrict").textContent = data.topDistrict ?? "-";
 }
@@ -228,6 +235,15 @@ async function loadDistrictMap() {
 
     districtMap.fitBounds(districtGeoJsonLayer.getBounds());
 
+    // 자치구 순위 전체
+    const rankData = Object.entries(districtUsageMap)
+        .sort((a, b) => b[1] - a[1]);
+
+    const rankEl = document.getElementById("districtRank");
+    rankEl.innerHTML = rankData.map(([name, count], i) =>
+        `<li><span>${i + 1}. ${name}</span><span class="rank-count">${formatNumber(count)}건</span></li>`
+    ).join("");
+
     setTimeout(() => {
         districtMap.invalidateSize();
     }, 300);
@@ -264,10 +280,10 @@ async function loadRentTypeChart() {
     });
 }
 
-//리포트 다운로드
+// 리포트 다운로드
 async function downloadDashboard() {
-    const btn = document.querySelector(".dashboard-header button");
-    btn.style.display = "none";  // 캡처 전 다운로드 버튼 숨기기
+    const btn = document.querySelector(".download-btn");
+    btn.style.display = "none";
 
     const element = document.getElementById("dashboardContent");
     const canvas = await html2canvas(element, { scale: 2 });
@@ -276,7 +292,7 @@ async function downloadDashboard() {
     a.download = "서울시_공공자전거_이용_분석_현황.png";
     a.click();
 
-    btn.style.display = "";  // 캡처 후 다운로드 버튼 다시 보이기
+    btn.style.display = "";
 }
 
 function formatNumber(value) {
