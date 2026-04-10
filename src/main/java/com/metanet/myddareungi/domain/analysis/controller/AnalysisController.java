@@ -54,6 +54,7 @@ public class AnalysisController {
         model.addAttribute("totalElements", pagedResponse.getTotalElements());
         model.addAttribute("totalPages", pagedResponse.getTotalPages());
         model.addAttribute("currentPage", pagedResponse.getCurrentPage());
+        model.addAttribute("activeMenu", "analysis");
 
         return "analysis/analysis";
     }
