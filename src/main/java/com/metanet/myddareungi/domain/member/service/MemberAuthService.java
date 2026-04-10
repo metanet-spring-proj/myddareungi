@@ -80,33 +80,20 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 	// 회원 정보 수정
 	@Override
 	public Member updateMember(Long userId, MemberUpdateRequestDto dto) {
-	    // 존재 여부 확인
 	    Member member = memberMapper.getMemberByUserId(userId);
 	    if (member == null) {
 	        throw new MemberNotFoundException(userId);
-	    }
-
-	    // 기존 비밀번호 확인
-	    if (!passwordEncoder.matches(dto.getOldPassword(), member.getPassword())) {
-	        throw new BadCredentialsException("기존 비밀번호가 일치하지 않습니다.");
-	    }
-
-	    // 새 비밀번호 확인 일치 여부
-	    if (!dto.getNewPassword().equals(dto.getNewPasswordConfirm())) {
-	        throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
 	    }
 
 	    Member updatedMember = Member.builder()
 	        .userId(userId)
 	        .userName(dto.getUserName())
 	        .email(dto.getEmail())
-	        .password(passwordEncoder.encode(dto.getNewPassword()))
 	        .build();
 
 	    memberMapper.updateMember(updatedMember);
 	    return memberMapper.getMemberByUserId(userId);
 	}
-	
 	//회원 삭제(탈퇴)
 	@Override
 	public void deleteMember(Long userId) {
