@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class Notification {
 	long notificationId;
-	String userId;
+	long userId;
 	String notificationType;
 	String message;
 	long fileId;

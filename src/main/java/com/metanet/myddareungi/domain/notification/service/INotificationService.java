@@ -1,21 +1,15 @@
-
-package com.metanet.myddareungi.domain.notification.repository;
+package com.metanet.myddareungi.domain.notification.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.metanet.myddareungi.domain.notification.model.Notification;
 
-@Mapper
-public interface INotificationRepository { 
+public interface INotificationService {
     List<Notification> findAll();
     
     void markAllRead();
     void markAsRead(long notificationId);
     void deleteById(long notificationId);
     
-    void insert(Notification notification);
-    
-    
+    void insert(long userId, String notificationType, String message, long fileId );
 }
