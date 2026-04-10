@@ -126,6 +126,8 @@ public class MemberApiController {
         return ResponseEntity.noContent().build();
     }
     
+    
+    
 	private String extractFirstErrorMessage(BindingResult bindingResult) {
 		FieldError fieldError = bindingResult.getFieldError();
 		return fieldError != null ? fieldError.getDefaultMessage() : "회원가입 입력값을 확인해주세요.";
