@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.metanet.myddareungi.domain.analysis.dto.AnalysisPagedResponse;
 import com.metanet.myddareungi.domain.analysis.dto.AnalysisResponse;
@@ -20,15 +22,18 @@ import com.metanet.myddareungi.domain.analysis.service.IAnalysisService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Analysis", description = "따릉이 데이터 상세 분석 API")
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/analysis")
+@RequestMapping("/api/v1/analysis")
 public class AnalysisController {
 
     private final IAnalysisService analysisService;
 
+    @Operation(summary = "상세 데이터 검색", description = "월, 자치구, 연령대 필터를 사용하여 따릉이 이용 통계를 조회합니다.")
     @GetMapping("/search")
     public String searchAnalysis(
+
             @ModelAttribute("request") AnalysisSearchRequest request,
             Model model) {
 
@@ -53,8 +58,10 @@ public class AnalysisController {
         return "analysis/analysis";
     }
 
+    @Operation(summary = "분석 데이터 CSV 내보내기", description = "현재 필터링된 모든 분석 데이터를 CSV 파일로 다운로드합니다.")
     @GetMapping("/export/csv")
     public void exportCsv(
+
             @ModelAttribute("request") AnalysisSearchRequest request,
             HttpServletResponse response) throws IOException {
 

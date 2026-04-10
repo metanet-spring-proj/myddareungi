@@ -12,7 +12,8 @@
     <h2>상세 데이터 분석 탐색기</h2>
     <p class="sub-title">대여소별 상세 지표 (Station Stats)</p>
 
-    <form th:action="@{/analysis/search}" method="get" id="searchForm">
+    <form th:action="@{/api/v1/analysis/search}" method="get" id="searchForm">
+
         <input type="hidden" name="page" value="1">
         
         <div class="filter-section">
@@ -44,14 +45,15 @@
             </div>
 
             <button type="submit" class="btn-apply">적용</button>
-            <a th:href="@{/analysis/search}" class="btn-reset">필터 초기화</a>
+            <a th:href="@{/api/v1/analysis/search}" class="btn-reset">필터 초기화</a>
+
         </div>
     </form>
 
     <div class="result-info" th:if="${totalElements > 0}">
         <div style="display: flex; align-items: center; gap: 10px;">
             <p style="margin: 0;">총 <span class="total-count" th:text="${#numbers.formatInteger(totalElements, 0, 'COMMA')}">0</span>건의 데이터가 조회되었습니다.</p>
-            <a th:href="@{/analysis/export/csv(month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}" 
+            <a th:href="@{/api/v1/analysis/export/csv(month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}" 
                class="btn-csv" style="text-decoration: none; font-size: 13px;">CSV 저장</a>
         </div>
     </div>
@@ -86,14 +88,16 @@
         <div class="pagination" th:if="${totalElements > 0}">
             <!-- First Page -->
             <a th:if="${currentPage > 1}" 
-               th:href="@{/analysis/search(page=1, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+               th:href="@{/api/v1/analysis/search(page=1, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
                title="First Page">
                &laquo;
             </a>
 
             <!-- Previous Page -->
             <a th:if="${currentPage > 1}" 
-               th:href="@{/analysis/search(page=${currentPage - 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+               th:href="@{/api/v1/analysis/search(page=${currentPage - 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
                title="Previous Page">
                &lt;
             </a>
@@ -104,14 +108,16 @@
             
             <!-- Next Page -->
             <a th:if="${currentPage < totalPages}" 
-               th:href="@{/analysis/search(page=${currentPage + 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+               th:href="@{/api/v1/analysis/search(page=${currentPage + 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
                title="Next Page">
                &gt;
             </a>
 
             <!-- Last Page -->
             <a th:if="${currentPage < totalPages}" 
-               th:href="@{/analysis/search(page=${totalPages}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+               th:href="@{/api/v1/analysis/search(page=${totalPages}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
                title="Last Page">
                &raquo;
             </a>
