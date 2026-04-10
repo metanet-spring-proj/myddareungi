@@ -166,16 +166,15 @@ public class UploadFileController {
         }
     }
 	
-	@PatchMapping("/{fileId}/review")
-	public ResponseEntity<?> reviewFile(
-	        @PathVariable long fileId,
-	        @RequestParam String status) {
+	@PatchMapping("/{fileId}/approve")
+	public ResponseEntity<?> approveFile(
+	        @PathVariable long fileId) {
 	    try {
 	        // TODO: JWT 구현 후 토큰에서 추출한 adminId로 교체
 	        long mockAdminId = 42;
 	        
-	        uploadFileService.reviewFile(fileId, status, mockAdminId);
-	        return ResponseEntity.ok("파일 " + status + " 처리 완료");
+	        uploadFileService.reviewFile(fileId, "APPROVED", mockAdminId);
+	        return ResponseEntity.ok("파일 APPROVE 처리 완료");
 	        
 	    } catch (IllegalArgumentException e) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -185,6 +184,26 @@ public class UploadFileController {
 	                .body("파일 검토 처리 실패");
 	    }
 	}
+	
+	@PatchMapping("/{fileId}/reject")
+	public ResponseEntity<?> rejectFile(
+	        @PathVariable long fileId) {
+	    try {
+	        // TODO: JWT 구현 후 토큰에서 추출한 adminId로 교체
+	        long mockAdminId = 42;
+	        
+	        uploadFileService.reviewFile(fileId, "REJECTED", mockAdminId);
+	        return ResponseEntity.ok("파일 REJECTE 처리 완료");
+	        
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("파일 검토 처리 실패");
+	    }
+	}
+
 
 
 
