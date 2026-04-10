@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "../mybatis-3-mapper.dtd">
+
+<mapper namespace="com.metanet.myddareungi.domain.admin.repository.IAdminRepository">
+
+    <!-- 검토 대기 수 조회 -->
+    <select id="countPendingFiles" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM file_upload
+        WHERE status = 'PENDING'
+        ]]>
+    </select>
+
+    <!-- 금일 업로드 수 조회 -->
+    <select id="countTodayUploads" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM file_upload
+        WHERE TRUNC(uploaded_at) = TRUNC(SYSDATE)
+        ]]>
+    </select>
+
+    <!-- 관리자 정보 조회 -->
+    <select id="getAdminInfo" resultType="com.metanet.myddareungi.domain.member.model.Member">
+        <![CDATA[
+        SELECT 
+            user_id as userId,
+            login_id as loginId,
+            user_name as userName,
+            email,
+            role
+        FROM users
+        WHERE user_id = #{userId}
+        ]]>
+    </select>
+
+</mapper>

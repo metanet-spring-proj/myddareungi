@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이 페이지 - 관리자</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
+</head>
+<body>
+<div class="layout">
+
+    <!-- 상단 네비게이션 -->
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+
+    <!-- 사이드바 -->
+    <th:block th:replace="~{fragments/sidebar :: sidebar}"></th:block>
+
+    <!-- 메인 -->
+    <main class="main-content" id="main-content"
+          th:data-confirm-approve="#{msg.confirm.approve}"
+          th:data-confirm-reject="#{msg.confirm.reject}"
+          th:data-success-action="#{msg.success.action}"
+          th:data-error-action="#{msg.error.action}"
+          th:data-error-network="#{msg.error.network}"
+          th:data-action-approve="#{action.approve}"
+          th:data-action-reject="#{action.reject}">
+        <section class="page-header">
+            <h3 th:text="#{mypage.title}">마이 페이지 - 관리자</h3>
+            <p th:text="#{mypage.subtitle}">시스템 리소스 및 업로드 이력을 관리하고 정책을 구성합니다.</p>
+        </section>
+
+        <section class="content-grid">
+
+            <!-- 프로필 카드 -->
+            <div class="card profile-card">
+                <div class="profile-header">
+                    <div class="profile-info-wrap">
+                        <div class="profile-avatar">👨💼</div>
+                        <div>
+                            <div class="profile-name" th:text="${adminName}">김서울 관리자</div>
+                            <span class="role-badge" th:text="#{profile.role}">최고 관리자</span>
+                        </div>
+                    </div>
+                    <button class="edit-btn">✎</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="profile-detail">
+                    <div class="label" th:text="#{profile.email}">이메일</div>
+                    <div class="value" th:text="${adminEmail}">seoul.admin@seoul.go.kr</div>
+                </div>
+            </div>
+
+            <!-- 오른쪽 영역 -->
+            <div class="right-section">
+
+                <!-- KPI -->
+                <div class="kpi-row">
+                    <div class="card kpi-card">
+                        <div class="kpi-label" th:text="#{kpi.pending}">검토 대기</div>
+                        <div class="kpi-value waiting" th:text="${pendingCount}">12</div>
+                    </div>
+
+                    <div class="card kpi-card">
+                        <div class="kpi-label" th:text="#{kpi.today}">금일 업로드</div>
+                        <div class="kpi-value upload" th:text="${todayUploadCount}">45</div>
+                    </div>
+                </div>
+
+                <!-- 테이블 -->
+                <div class="card table-card">
+                    <div class="table-header">
+                        <h3 th:text="#{table.title}">데이터 검토 대기열</h3>
+                        <a href="#" th:text="#{table.viewall}">모두 보기</a>
+                    </div>
+
+                    <table>
+                        <thead>
+                        <tr>
+                            <th th:text="#{table.header.date}">업로드 날짜</th>
+                            <th th:text="#{table.header.name}">데이터 명칭</th>
+                            <th th:text="#{table.header.writer}">작성자</th>
+                            <th th:text="#{table.header.size}">용량</th>
+                            <th th:text="#{table.header.status}">상태</th>
+                            <th th:text="#{table.header.action}">관리</th>
+                            <th th:text="#{table.header.download}">다운로드</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="file : ${pendingFiles}">
+                            <td th:text="${file.uploadDate}">2025.05.21</td>
+                            <td>
+                                <div class="file-info-cell" style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-file-csv" style="color: #94a3b8;"></i>
+                                    <span th:text="${file.fileName}">강남구 대여소 실시간 현황</span>
+                                </div>
+                            </td>
+                            <td th:text="${file.writer}">이종성 주무관</td>
+                            <td th:text="${file.fileSize}">1.2GB</td>
+                            <td>
+                                <span th:if="${file.status == 'PENDING'}" class="status-badge badge-pending" th:text="#{status.pending}">대기</span>
+                                <span th:if="${file.status == 'APPROVED'}" class="status-badge badge-approved" th:text="#{status.approved}">승인</span>
+                                <span th:if="${file.status == 'REJECTED'}" class="status-badge badge-rejected" th:text="#{status.rejected}">반려</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <!-- 승인/반려 버튼 (PENDING 상태일 때만 노출) -->
+                                    <th:block th:if="${file.status == 'PENDING'}">
+                                        <button class="review-btn approve-btn" 
+                                                th:onclick="'reviewFile(' + ${file.fileId} + ', \'approve\')'" 
+                                                th:title="#{action.approve}">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="review-btn reject-btn" 
+                                                th:onclick="'reviewFile(' + ${file.fileId} + ', \'reject\')'" 
+                                                th:title="#{action.reject}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </th:block>
+                                </div>
+                            </td>
+                            <td>
+                                <!-- 다운로드 버튼 전용 컬럼 -->
+                                <a th:href="@{/api/files/{fileId}/downloads(fileId=${file.fileId})}" 
+                                   class="review-btn download-btn" 
+                                   th:title="#{action.download}">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script th:inline="javascript">
+        async function reviewFile(fileId, action) {
+            const mainContent = document.getElementById('main-content');
+            
+            // 다국어 메시지 로드
+            const confirmApprove = mainContent.dataset.confirmApprove;
+            const confirmReject = mainContent.dataset.confirmReject;
+            const successMsg = mainContent.dataset.successAction;
+            const errorBaseMsg = mainContent.dataset.errorAction;
+            const networkErrorMsg = mainContent.dataset.errorNetwork;
+            const actionApprove = mainContent.dataset.actionApprove;
+            const actionReject = mainContent.dataset.actionReject;
+
+            const confirmMsg = action === 'approve' ? confirmApprove : confirmReject;
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const response = await fetch(`/api/files/${fileId}/${action}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert(successMsg);
+                    location.reload(); // 리스트 갱신을 위해 페이지 새로고침
+                } else {
+                    const errorMsg = await response.text();
+                    alert(errorBaseMsg + ' ' + errorMsg);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(networkErrorMsg);
+            }
+        }
+    </script>
+
+    <!-- 푸터 -->
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+</div>
+</body>
+</html>
