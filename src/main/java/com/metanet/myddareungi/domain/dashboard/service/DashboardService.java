@@ -3,18 +3,20 @@ package com.metanet.myddareungi.domain.dashboard.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeDistrictSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeKpiSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeMonthlySummaryResponseDto;
+import com.metanet.myddareungi.domain.dashboard.dto.BikeRentTypeSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeWeekdaySummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.model.BikeAgeGroupSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeDistrictSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeKpi;
 import com.metanet.myddareungi.domain.dashboard.model.BikeMonthlySummary;
+import com.metanet.myddareungi.domain.dashboard.model.BikeRentTypeSummary;
 import com.metanet.myddareungi.domain.dashboard.model.BikeWeekdaySummary;
 import com.metanet.myddareungi.domain.dashboard.repository.DashboardRepository;
 
@@ -25,25 +27,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashboardService implements IDashboardService {
 
-    private final DashboardRepository dashoardRepository;
+    private final DashboardRepository dashboardRepository;
 
+    @Cacheable("kpi")
     @Override
     public BikeKpiSummaryResponseDto getKpi() {
-        BikeKpi bikeKpi = dashoardRepository.selectLatestKpi();
+        BikeKpi bikeKpi = dashboardRepository.selectLatestKpi();
 
         BikeKpiSummaryResponseDto responseDto = new BikeKpiSummaryResponseDto();
-        responseDto.setTotalUseCount(bikeKpi.getTotalUseCount());
+        responseDto.setTotalUseCnt(bikeKpi.getTotalUseCnt());
         responseDto.setTotalCarbonSaved(bikeKpi.getTotalCarbonSaved());
-        responseDto.setTotalStationCount(bikeKpi.getTotalStationCount());
+        responseDto.setTotalStationCnt(bikeKpi.getTotalStationCnt());
         responseDto.setAvgUseTime(bikeKpi.getAvgUseTime());
         responseDto.setTopDistrict(bikeKpi.getTopDistrict());
-
+System.out.println();
         return responseDto;
     }
 
+    @Cacheable("monthlySummary")
     @Override
     public BikeMonthlySummaryResponseDto getMonthlySummary() {
-        List<BikeMonthlySummary> monthlySummaryList = dashoardRepository.selectMonthlySummaryList();
+        List<BikeMonthlySummary> monthlySummaryList = dashboardRepository.selectMonthlySummaryList();
 
         List<String> monthList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -63,9 +67,10 @@ public class DashboardService implements IDashboardService {
         return responseDto;
     }
 
+    @Cacheable("weekdaySummary")
     @Override
     public BikeWeekdaySummaryResponseDto getWeekDaySummary() {
-        List<BikeWeekdaySummary> weekdaySummaryList = dashoardRepository.selectWeekdaySummaryList();
+        List<BikeWeekdaySummary> weekdaySummaryList = dashboardRepository.selectWeekdaySummaryList();
 
         List<String> weekdayList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -82,9 +87,10 @@ public class DashboardService implements IDashboardService {
         return responseDto;
     }
 
+    @Cacheable("ageGroupSummary")
     @Override
     public BikeAgeGroupSummaryResponseDto getAgeGroupSummary() {
-        List<BikeAgeGroupSummary> ageGroupSummaryList = dashoardRepository.selectAgeGroupSummaryList();
+        List<BikeAgeGroupSummary> ageGroupSummaryList = dashboardRepository.selectAgeGroupSummaryList();
 
         List<String> ageGroupList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -101,9 +107,10 @@ public class DashboardService implements IDashboardService {
         return responseDto;
     }
 
+    @Cacheable("districtSummary")
     @Override
     public BikeDistrictSummaryResponseDto getDistrictSummary() {
-        List<BikeDistrictSummary> districtSummaryList = dashoardRepository.selectDistrictSummaryList();
+        List<BikeDistrictSummary> districtSummaryList = dashboardRepository.selectDistrictSummaryList();
 
         List<String> districtList = new ArrayList<>();
         List<Long> useCountList = new ArrayList<>();
@@ -118,5 +125,25 @@ public class DashboardService implements IDashboardService {
         responseDto.setUseCountList(useCountList);
 
         return responseDto;
+    }
+    
+    @Cacheable("rentTypeSummary")
+    @Override
+    public BikeRentTypeSummaryResponseDto getRentTypeSummary() {
+        List<BikeRentTypeSummary> list = dashboardRepository.selectRentTypeSummaryList();
+
+        List<String> rentTypeList = new ArrayList<>();
+        List<Long> useCountList = new ArrayList<>();
+
+        for (BikeRentTypeSummary item : list) {
+            rentTypeList.add(item.getRentType());
+            useCountList.add(item.getTotalUseCnt());
+        }
+
+        BikeRentTypeSummaryResponseDto dto = new BikeRentTypeSummaryResponseDto();
+        dto.setRentTypeList(rentTypeList);
+        dto.setUseCountList(useCountList);
+
+        return dto;
     }
 }

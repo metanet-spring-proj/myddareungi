@@ -4,6 +4,7 @@ import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseD
 import com.metanet.myddareungi.domain.dashboard.dto.BikeDistrictSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeKpiSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeMonthlySummaryResponseDto;
+import com.metanet.myddareungi.domain.dashboard.dto.BikeRentTypeSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeWeekdaySummaryResponseDto;
 
 public interface IDashboardService {
@@ -17,4 +18,6 @@ public interface IDashboardService {
     BikeAgeGroupSummaryResponseDto getAgeGroupSummary();
 
     BikeDistrictSummaryResponseDto getDistrictSummary();
+    
+    BikeRentTypeSummaryResponseDto getRentTypeSummary();
 }

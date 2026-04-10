@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>따릉이 상세 데이터 분석</title>
+    <link rel="stylesheet" th:href="@{/css/analysis/analysis.css}">
+</head>
+<body>
+
+<div class="container">
+    <h2>상세 데이터 분석 탐색기</h2>
+    <p class="sub-title">대여소별 상세 지표 (Station Stats)</p>
+
+    <form th:action="@{/api/v1/analysis/search}" method="get" id="searchForm">
+
+        <input type="hidden" name="page" value="1">
+        
+        <div class="filter-section">
+            <select name="month" class="filter-select">
+                <option value="">전체 월</option>
+                <option th:each="m : ${#numbers.sequence(1, 12)}" 
+                        th:value="${m}" 
+                        th:text="${m} + '월'"
+                        th:selected="${request.month == m}"></option>
+            </select>
+
+            <select name="district" class="filter-select" multiple size="1" style="min-width: 150px;">
+                <option value="" disabled>자치구(중복선택)</option>
+                <th:block th:each="d : ${ {'강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'} }">
+                    <option th:value="${d}" th:text="${d}" 
+                            th:selected="${request.district != null && request.district.contains(d)}"></option>
+                </th:block>
+            </select>
+
+            <div class="age-group-container">
+                <th:block th:each="age : ${ {'~10대', '20대', '30대', '40대', '50대', '60대', '기타'} }">
+                    <label class="age-label">
+                        <input type="checkbox" name="ageGroup" th:value="${age}" 
+                               th:checked="${request.ageGroup != null && request.ageGroup.contains(age)}" 
+                               style="display:none;">
+                        <span class="age-badge" th:text="${age}"></span>
+                    </label>
+                </th:block>
+            </div>
+
+            <button type="submit" class="btn-apply">적용</button>
+            <a th:href="@{/api/v1/analysis/search}" class="btn-reset">필터 초기화</a>
+
+        </div>
+    </form>
+
+    <div class="result-info" th:if="${totalElements > 0}">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <p style="margin: 0;">총 <span class="total-count" th:text="${#numbers.formatInteger(totalElements, 0, 'COMMA')}">0</span>건의 데이터가 조회되었습니다.</p>
+            <a th:href="@{/api/v1/analysis/export/csv(month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}" 
+               class="btn-csv" style="text-decoration: none; font-size: 13px;">CSV 저장</a>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table id="analysisTable">
+            <thead>
+                <tr>
+                    <th>대여소 명</th>
+                    <th>자치구</th>
+                    <th>월</th>
+                    <th>연령대</th>
+                    <th>이용 건수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="row : ${result}">
+                    <td><a href="#" class="station-name" th:text="${row.stationName}"></a></td>
+                    <td><span class="district-tag" th:text="${row.district}"></span></td>
+                    <td th:text="${row.month} + '월'"></td>
+                    <td th:text="${row.ageGroup}"></td>
+                    <td class="use-count" th:text="${#numbers.formatInteger(row.totalUseCnt, 0, 'COMMA')}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(result)}" class="empty-msg">
+            조회된 데이터가 없습니다. 필터를 조정해 보세요.
+        </div>
+
+        <!-- Pagination Section -->
+        <div class="pagination" th:if="${totalElements > 0}">
+            <!-- First Page -->
+            <a th:if="${currentPage > 1}" 
+               th:href="@{/api/v1/analysis/search(page=1, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
+               title="First Page">
+               &laquo;
+            </a>
+
+            <!-- Previous Page -->
+            <a th:if="${currentPage > 1}" 
+               th:href="@{/api/v1/analysis/search(page=${currentPage - 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
+               title="Previous Page">
+               &lt;
+            </a>
+            
+            <span class="current-page">
+                <span th:text="${currentPage}">1</span> / <span th:text="${totalPages}">1</span>
+            </span>
+            
+            <!-- Next Page -->
+            <a th:if="${currentPage < totalPages}" 
+               th:href="@{/api/v1/analysis/search(page=${currentPage + 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
+               title="Next Page">
+               &gt;
+            </a>
+
+            <!-- Last Page -->
+            <a th:if="${currentPage < totalPages}" 
+               th:href="@{/api/v1/analysis/search(page=${totalPages}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+
+               title="Last Page">
+               &raquo;
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

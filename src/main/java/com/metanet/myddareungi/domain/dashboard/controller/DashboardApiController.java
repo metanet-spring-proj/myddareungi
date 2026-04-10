@@ -9,6 +9,7 @@ import com.metanet.myddareungi.domain.dashboard.dto.BikeAgeGroupSummaryResponseD
 import com.metanet.myddareungi.domain.dashboard.dto.BikeDistrictSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeKpiSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeMonthlySummaryResponseDto;
+import com.metanet.myddareungi.domain.dashboard.dto.BikeRentTypeSummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.dto.BikeWeekdaySummaryResponseDto;
 import com.metanet.myddareungi.domain.dashboard.service.IDashboardService;
 
@@ -59,5 +60,11 @@ public class DashboardApiController {
   
     ) {
         return ResponseEntity.ok(dashboardService.getDistrictSummary());
+    }
+    
+    @Operation(summary = "이용권 종류별 이용건수 조회", description = "이용권 종류별 집계 결과(이용건수)를 조회한다.")
+    @GetMapping("/rent-type-summary")
+    public ResponseEntity<BikeRentTypeSummaryResponseDto> getRentTypeSummary() {
+        return ResponseEntity.ok(dashboardService.getRentTypeSummary());
     }
 }

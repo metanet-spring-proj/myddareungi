@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "../mybatis-3-mapper.dtd">
+
+<mapper namespace="com.metanet.myddareungi.domain.analysis.repository.AnalysisRepository">
+
+    <select id="searchAnalysis" resultType="AnalysisResult">
+        SELECT *
+        FROM (
+            SELECT ROWNUM AS rnum, a.*
+            FROM (
+                SELECT station_name, district, month, age_group, total_use_cnt
+                FROM bike_usage_stats
+                <where>
+                    <if test="month != null and month != ''"> AND MONTH = #{month} </if>
+                    <if test="district != null and district.size() > 0">
+                        AND district IN 
+                        <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
+                    </if>
+                    <if test="ageGroup != null and ageGroup.size() > 0">
+                        AND age_group IN 
+                        <foreach item="a" collection="ageGroup" open="(" separator="," close=")">#{a}</foreach>
+                    </if>
+                </where>
+                ORDER BY total_use_cnt DESC
+            ) a
+            WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE rnum &gt;= #{startRow}
+    </select>
+
+    <select id="listAllAnalysis" resultType="AnalysisResult">
+        SELECT station_name, district, month, age_group, total_use_cnt
+        FROM bike_usage_stats
+        <where>
+            <if test="month != null and month != ''"> AND MONTH = #{month} </if>
+            <if test="district != null and district.size() > 0">
+                AND district IN 
+                <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
+            </if>
+            <if test="ageGroup != null and ageGroup.size() > 0">
+                AND age_group IN 
+                <foreach item="a" collection="ageGroup" open="(" separator="," close=")">#{a}</foreach>
+            </if>
+        </where>
+        ORDER BY total_use_cnt DESC
+    </select>
+
+    <select id="countSearchAnalysis" resultType="int">
+        SELECT COUNT(*)
+        FROM bike_usage_stats
+        <where>
+            <if test="month != null and month != ''"> AND MONTH = #{month} </if>
+            <if test="district != null and district.size() > 0">
+                AND district IN 
+                <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
+            </if>
+            <if test="ageGroup != null and ageGroup.size() > 0">
+                AND age_group IN 
+                <foreach item="a" collection="ageGroup" open="(" separator="," close=")">#{a}</foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

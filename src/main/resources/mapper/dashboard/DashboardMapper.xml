@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "../mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper
 	namespace="com.metanet.myddareungi.domain.dashboard.repository.DashboardRepository">
+
 	<!-- KPI -->
 	<select id="selectLatestKpi"
 		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeKpi">
 		SELECT
-		total_use_count,
+		total_use_cnt,
 		total_carbon_saved,
-		total_station_count,
+		total_station_cnt,
 		avg_use_time,
 		top_district,
 		created_at
@@ -22,12 +23,11 @@
 	<select id="selectMonthlySummaryList"
 		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeMonthlySummary">
 		SELECT
-		id,
 		month,
-		total_use_cnt,
-		total_station_cnt,
-		created_at
+		SUM(total_use_cnt) AS total_use_cnt,
+		SUM(total_station_cnt) AS total_station_cnt
 		FROM bike_monthly_summary
+		GROUP BY month
 		ORDER BY month ASC
 	</select>
 
@@ -35,12 +35,10 @@
 	<select id="selectWeekdaySummaryList"
 		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeWeekdaySummary">
 		SELECT
-		id,
-		month,
 		weekday,
-		total_use_cnt,
-		created_at
+		SUM(total_use_cnt) AS total_use_cnt
 		FROM bike_weekday_summary
+		GROUP BY weekday
 		ORDER BY
 		CASE weekday
 		WHEN '월' THEN 1
@@ -58,12 +56,10 @@
 	<select id="selectAgeGroupSummaryList"
 		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeAgeGroupSummary">
 		SELECT
-		id,
-		month,
 		age_group,
-		total_use_cnt,
-		created_at
+		SUM(total_use_cnt) AS total_use_cnt
 		FROM bike_age_group_summary
+		GROUP BY age_group
 		ORDER BY
 		CASE age_group
 		WHEN '~10대' THEN 1
@@ -80,14 +76,28 @@
 	<!-- 자치구별 집계 -->
 	<select id="selectDistrictSummaryList"
 		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeDistrictSummary">
+		SELECT district, total_use_cnt
+		FROM (
 		SELECT
-		id,
-		month,
 		district,
-		total_use_cnt,
-		created_at
+		SUM(total_use_cnt) AS total_use_cnt
 		FROM bike_district_summary
+		GROUP BY district
+		)
 		ORDER BY total_use_cnt DESC
-	</select>
+</select>
 
+	<!-- 이용권 종류별 집계 -->
+	<select id="selectRentTypeSummaryList"
+		resultType="com.metanet.myddareungi.domain.dashboard.model.BikeRentTypeSummary">
+		SELECT rent_type, total_use_cnt
+		FROM (
+		SELECT
+		rent_type,
+		SUM(total_use_cnt) AS total_use_cnt
+		FROM bike_rent_type_summary
+		GROUP BY rent_type
+		)
+		ORDER BY total_use_cnt DESC
+</select>
 </mapper>
