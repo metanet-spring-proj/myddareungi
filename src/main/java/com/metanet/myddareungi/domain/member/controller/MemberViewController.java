@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberViewController {
 	private final MemberAuthService memberAuthService;
 
-
 	@GetMapping("/login")
 	public String loginPage(Authentication authentication) {
 		if (isAuthenticated(authentication)) {
@@ -38,16 +37,16 @@ public class MemberViewController {
 	}
 
 	@GetMapping("/member/update")
-    public String updatePage(Authentication authentication, Model model) {
-        if (!isAuthenticated(authentication)) {
-            return "redirect:/login";
-        }
-        // 로그인된 유저 정보 꺼내서 폼에 채워줌
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Member member = memberAuthService.getMember(userDetails.getUsername()); 
-        model.addAttribute("member", member);
-        return "member/update";
-    }
+	public String updatePage(Authentication authentication, Model model) {
+		if (!isAuthenticated(authentication)) {
+			return "redirect:/login";
+		}
+		// 로그인된 유저 정보 꺼내서 폼에 채워줌
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		Member member = memberAuthService.getMember(userDetails.getUsername());
+		model.addAttribute("member", member);
+		return "member/update";
+	}
 
 	@GetMapping("/password/forgot")
 	public String forgotPasswordPage(Authentication authentication) {
@@ -59,7 +58,7 @@ public class MemberViewController {
 
 	private boolean isAuthenticated(Authentication authentication) {
 		return authentication != null
-			&& authentication.isAuthenticated()
-			&& !(authentication instanceof AnonymousAuthenticationToken);
+				&& authentication.isAuthenticated()
+				&& !(authentication instanceof AnonymousAuthenticationToken);
 	}
 }
