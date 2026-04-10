@@ -69,34 +69,16 @@
 
 								<div class="field-group">
 									<label for="userName">이름</label>
-									<input id="userName" name="userName" type="text" th:value="${member?.userName}"
+									<input id="userName" name="userName" type="text"
+										th:value="${member?.userName}"
 										placeholder="홍길동" autocomplete="name" required>
 								</div>
 
 								<div class="field-group">
 									<label for="email">이메일</label>
-									<input id="email" name="email" type="email" th:value="${member?.email}"
+									<input id="email" name="email" type="email"
+										th:value="${member?.email}"
 										placeholder="example@seoul.go.kr" autocomplete="email" required>
-								</div>
-
-								<div class="field-group">
-									<label for="oldPassword">기존 비밀번호</label>
-									<input id="oldPassword" name="oldPassword" type="password" placeholder="기존 비밀번호 입력"
-										autocomplete="current-password" required>
-								</div>
-
-								<div class="field-row">
-									<div class="field-group">
-										<label for="newPassword">새 비밀번호</label>
-										<input id="newPassword" name="newPassword" type="password"
-											placeholder="••••••••" autocomplete="new-password" required>
-									</div>
-
-									<div class="field-group">
-										<label for="newPasswordConfirm">새 비밀번호 확인</label>
-										<input id="newPasswordConfirm" name="newPasswordConfirm" type="password"
-											placeholder="••••••••" autocomplete="new-password" required>
-									</div>
 								</div>
 
 							</div>
@@ -133,7 +115,6 @@
 			const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
 			const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN';
 
-			// userId는 서버에서 세션 혹은 URL로 받아옴
 			const userId = /*[[${member?.userId}]]*/ null;
 
 			const showMessage = (element, message) => {
@@ -162,46 +143,31 @@
 				event.preventDefault();
 				clearMessages();
 
-				const newPassword = form.elements.newPassword.value;
-				const newPasswordConfirm = form.elements.newPasswordConfirm.value;
-
-				if (newPassword !== newPasswordConfirm) {
-					showMessage(errorBox, '새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-					return;
-				}
-
 				const payload = {
 					userName: readField('userName'),
-					email: readField('email'),
-					oldPassword: form.elements.oldPassword.value,
-					newPassword: newPassword,
-					newPasswordConfirm: newPasswordConfirm
+					email: readField('email')
 				};
 
 				toggleSubmitting(true);
 
 				try {
-					const headers = {'Content-Type': 'application/json'};
+					const headers = { 'Content-Type': 'application/json' };
 					if (csrfToken) headers[csrfHeader] = csrfToken;
 
 					const response = await fetch(`/api/v1/users/${userId}`, {
-					    method: 'PUT',
-					    headers,
-					    credentials: 'same-origin',
-					    body: JSON.stringify(payload)
+						method: 'PUT',
+						headers,
+						credentials: 'same-origin',
+						body: JSON.stringify(payload)
 					});
 
-					if (response.status === 401) {
-					    showMessage(errorBox, '기존 비밀번호가 일치하지 않습니다.');
-					    return;
-					}
-
 					if (!response.ok) {
-					    showMessage(errorBox, '수정 중 오류가 발생했습니다.');
-					    return;
+						showMessage(errorBox, '수정 중 오류가 발생했습니다.');
+						return;
 					}
 
 					window.location.href = '/dashboard';
+
 				} catch (error) {
 					showMessage(errorBox, '요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
 				} finally {
