@@ -264,6 +264,21 @@ async function loadRentTypeChart() {
     });
 }
 
+//리포트 다운로드
+async function downloadDashboard() {
+    const btn = document.querySelector(".dashboard-header button");
+    btn.style.display = "none";  // 캡처 전 다운로드 버튼 숨기기
+
+    const element = document.getElementById("dashboardContent");
+    const canvas = await html2canvas(element, { scale: 2 });
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "서울시_공공자전거_이용_분석_현황.png";
+    a.click();
+
+    btn.style.display = "";  // 캡처 후 다운로드 버튼 다시 보이기
+}
+
 function formatNumber(value) {
     if (value == null) {
         return "-";

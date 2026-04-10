@@ -10,70 +10,78 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script defer th:src="@{/js/dashboard/dashboard.js}"></script>
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </head>
 
 <body>
-	<h1>따릉이 대시보드</h1>
-
-	<section class="kpi-grid">
-		<div class="kpi-card">
-			<div class="kpi-title">총 누적 이용건수</div>
-			<div class="kpi-value" id="totalUseCnt">-</div>
+	<div id="dashboardContent">
+		<div class="dashboard-header">
+			<h1>서울시 공공자전거 이용 분석 현황</h1>
+			<button class="download-btn" onclick="downloadDashboard()">⬇ 리포트 다운로드</button>
 		</div>
-		<div class="kpi-card">
-			<div class="kpi-title">총 누적 탄소절감량</div>
-			<div class="kpi-value" id="totalCarbonSaved">-</div>
-		</div>
-		<div class="kpi-card">
-			<div class="kpi-title">총 대여소 수</div>
-			<div class="kpi-value" id="totalStationCnt">-</div>
-		</div>
-		<div class="kpi-card">
-			<div class="kpi-title">평균 이용시간</div>
-			<div class="kpi-value" id="avgUseTime">-</div>
-		</div>
-		<div class="kpi-card">
-			<div class="kpi-title">최다 이용 자치구</div>
-			<div class="kpi-value" id="topDistrict">-</div>
-		</div>
-	</section>
-
-	<section class="chart-grid">
-		<div class="chart-card">
-			<div class="chart-title">월별 이용건수 / 대여소 수</div>
-			<div class="chart-box">
-				<canvas id="monthlyChart"></canvas>
+		<section class="kpi-grid">
+			<div class="kpi-card">
+				<div class="kpi-title">총 누적 이용건수</div>
+				<div class="kpi-value" id="totalUseCnt">-</div>
 			</div>
-		</div>
-
-		<div class="chart-card">
-			<div class="chart-title">요일별 이용건수</div>
-			<div class="chart-box">
-				<canvas id="weekdayChart"></canvas>
+			<div class="kpi-card">
+				<div class="kpi-title">총 누적 탄소절감량</div>
+				<div class="kpi-value" id="totalCarbonSaved">-</div>
 			</div>
-		</div>
-
-		<div class="chart-card">
-			<div class="chart-title">연령대별 이용건수</div>
-			<div class="chart-box">
-				<canvas id="ageGroupChart"></canvas>
+			<div class="kpi-card">
+				<div class="kpi-title">총 대여소 수</div>
+				<div class="kpi-value" id="totalStationCnt">-</div>
 			</div>
-		</div>
-
-		<div class="chart-card district-map-card">
-			<div class="chart-title">자치구별 이용건수</div>
-			<div class="chart-box map-box">
-				<div id="districtMap"></div>
+			<div class="kpi-card">
+				<div class="kpi-title">평균 이용시간</div>
+				<div class="kpi-value" id="avgUseTime">-</div>
 			</div>
-		</div>
-
-		<div class="chart-card">
-			<div class="chart-title">이용권 종류별 이용건수</div>
-			<div class="chart-box">
-				<canvas id="rentTypeChart"></canvas>
+			<div class="kpi-card">
+				<div class="kpi-title">최다 이용 자치구</div>
+				<div class="kpi-value" id="topDistrict">-</div>
 			</div>
-		</div>
-	</section>
+		</section>
+
+		<section class="chart-grid">
+			<div class="chart-card">
+				<div class="chart-title">월별 이용건수 / 대여소 수</div>
+				<div class="chart-box">
+					<canvas id="monthlyChart"></canvas>
+				</div>
+			</div>
+
+			<div class="chart-card district-map-card">
+				<div class="chart-title">자치구별 이용건수</div>
+				<div class="chart-box map-box">
+					<div id="districtMap"></div>
+				</div>
+			</div>
+
+			<div class="chart-card">
+				<div class="chart-title">요일별 이용건수</div>
+				<div class="chart-box">
+					<canvas id="weekdayChart"></canvas>
+				</div>
+			</div>
+
+			<div class="chart-card">
+				<div class="chart-title">연령대별 이용건수</div>
+				<div class="chart-box">
+					<canvas id="ageGroupChart"></canvas>
+				</div>
+			</div>
+
+
+
+			<div class="chart-card">
+				<div class="chart-title">이용권 종류별 이용건수</div>
+				<div class="chart-box">
+					<canvas id="rentTypeChart"></canvas>
+				</div>
+			</div>
+		</section>
+	</div>
 </body>
 
 </html>
