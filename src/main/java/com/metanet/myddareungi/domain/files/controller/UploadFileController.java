@@ -1,26 +1,31 @@
 package com.metanet.myddareungi.domain.files.controller;
 
+import com.metanet.myddareungi.config.CustomUserDetails;
+import org.springframework.security.core.Authentication;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,53 +38,57 @@ import com.metanet.myddareungi.domain.notification.service.INotificationService;
 @RestController
 @RequestMapping("/api/files")
 public class UploadFileController {
+
+	private static final Logger log = LoggerFactory.getLogger(UploadFileController.class);
+
 	@Autowired
 	private IUploadFileService uploadFileService;
 
 	@Autowired
 	private INotificationService notificationService;
+
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 	
 	@PostMapping
-	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
-		// ,Principal principal) {
+	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Authentication authentication) {
+		log.info("파일 도착: {}", file.getOriginalFilename());
 		System.out.println("=== upload controller entered ===");
-		String uploadDir = "C:/dev/upload";
 		try {
 			if (file.isEmpty()) {
-				return ResponseEntity.badRequest().body("업로드할 파일이 없습니다.");
+				return ResponseEntity.badRequest().body("파일이 비어있거나 전송되지 않았습니다.");
 			}
 
 			String originalFileName = file.getOriginalFilename();
-			String fileExt = originalFileName.substring(originalFileName.lastIndexOf("."));
+			String uuid = UUID.randomUUID().toString();
+			String uuidFileName = uuid + "_" + originalFileName;
 
-			if (!fileExt.equals(".csv")) {
-				return ResponseEntity.badRequest().body("CSV 파일만 업로드 가능합니다.");
+			File dir = new File(uploadDir);
+			if (!dir.exists()) {
+				dir.mkdirs();
 			}
 
-			UUID uuid = UUID.randomUUID();
-			String savedFileName = uuid + fileExt;
-
-			Path savePath = Paths.get(uploadDir, savedFileName);
-			Files.createDirectories(savePath.getParent());
-			file.transferTo(savePath.toFile());
+			File saveFile = new File(uploadDir, uuidFileName);
+			file.transferTo(saveFile);
 
 			UploadFile uploadFile = new UploadFile();
-			// uploadFile.setUploaderId(principal.getName()); // 로그인 사용자 ID
-			uploadFile.setUploaderId(2);
 			uploadFile.setFileName(originalFileName);
-			uploadFile.setUuidFileName(savedFileName);
-			uploadFile.setStoragePath(uploadDir);
+			uploadFile.setUuidFileName(uuidFileName);
 			uploadFile.setFileSize(file.getSize());
+			uploadFile.setStoragePath(uploadDir);
 			uploadFile.setStatus("PENDING");
-			uploadFile.setUploadAt(new Timestamp(System.currentTimeMillis()));
-			System.out.println("파일 업로드 시작");
+
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			uploadFile.setUploaderId(userDetails.getUserId());
+
+			System.out.println("파일 DB 저장 시작: " + originalFileName);
 			uploadFileService.uploadFile(uploadFile);
-			System.out.println("파일 업로드");
+
 			return ResponseEntity.status(HttpStatus.CREATED).body("파일 업로드 성공");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("파일 업로드 실패");
+					.body("파일 업로드 중 오류 발생: " + e.getMessage());
 		}
 	}
 
@@ -90,14 +99,11 @@ public class UploadFileController {
 	}
 
 	@GetMapping("/my")
-	public ResponseEntity<List<UploadFile>> getMyFiles() {
-		// TODO: JWT 구현 후 토큰에서 추출한 userId로 교체
-		// JWT 적용 후 교체할 코드
-		// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		// long userId = ((CustomUserDetails) auth.getPrincipal()).getUserId();
-		long mockUserId = 41;
+	public ResponseEntity<List<UploadFile>> getMyFiles(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
 
-		List<UploadFile> fileList = uploadFileService.getAllFilesByUploaderId(mockUserId);
+		List<UploadFile> fileList = uploadFileService.getAllFilesByUploaderId(userId);
 		return ResponseEntity.ok(fileList);
 	}
 
@@ -171,12 +177,12 @@ public class UploadFileController {
 
 	@PatchMapping("/{fileId}/approve")
 	public ResponseEntity<?> approveFile(
-			@PathVariable long fileId) {
+			@PathVariable long fileId, Authentication authentication) {
 		try {
-			// TODO: JWT 구현 후 토큰에서 추출한 adminId로 교체
-			long mockAdminId = 42;
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			long adminId = userDetails.getUserId();
 
-			uploadFileService.reviewFile(fileId, "APPROVED", mockAdminId);
+			uploadFileService.reviewFile(fileId, "APPROVED", adminId);
 			return ResponseEntity.ok("파일 APPROVE 처리 완료");
 
 		} catch (IllegalArgumentException e) {
@@ -190,12 +196,12 @@ public class UploadFileController {
 
 	@PatchMapping("/{fileId}/reject")
 	public ResponseEntity<?> rejectFile(
-			@PathVariable long fileId) {
+			@PathVariable long fileId, Authentication authentication) {
 		try {
-			// TODO: JWT 구현 후 토큰에서 추출한 adminId로 교체
-			long mockAdminId = 42;
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			long adminId = userDetails.getUserId();
 
-			uploadFileService.reviewFile(fileId, "REJECTED", mockAdminId);
+			uploadFileService.reviewFile(fileId, "REJECTED", adminId);
 			return ResponseEntity.ok("파일 REJECTE 처리 완료");
 
 		} catch (IllegalArgumentException e) {

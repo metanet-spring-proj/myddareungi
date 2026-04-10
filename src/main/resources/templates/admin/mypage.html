@@ -6,6 +6,9 @@
     <title>마이 페이지 - 관리자</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
+    <!-- CSRF Meta Tags -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 <div class="layout">
@@ -155,10 +158,22 @@
             if (!confirm(confirmMsg)) return;
 
             try {
+                // CSRF 토큰 획득 (쿠키 우선)
+                function getCookie(name) {
+                    let value = "; " + document.cookie;
+                    let parts = value.split("; " + name + "=");
+                    if (parts.length === 2) return parts.pop().split(";").shift();
+                    return null;
+                }
+                const csrfToken = getCookie('XSRF-TOKEN') || document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-XSRF-TOKEN';
+
                 const response = await fetch(`/api/files/${fileId}/${action}`, {
                     method: 'PATCH',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken,
+                        [csrfHeader]: csrfToken
                     }
                 });
 

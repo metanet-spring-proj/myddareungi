@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.repository.IUploadFileRepository;
 
 @Service
+@Transactional
 public class UploadFileService implements IUploadFileService {
 
 	@Autowired
