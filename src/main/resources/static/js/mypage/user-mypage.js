@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const mainContent  = document.getElementById('main-content');
-    const uploadForm   = document.getElementById('uploadForm');
-    const csvFile      = document.getElementById('csvFile');
-    const uploadZone   = document.getElementById('uploadZone');
+    const mainContent    = document.getElementById('main-content');
+    const csvFile        = document.getElementById('csvFile');
+    const uploadZone     = document.getElementById('uploadZone');
     const uploadProgress = document.getElementById('uploadProgress');
     const progressFill   = document.getElementById('progressFill');
     const progressText   = document.getElementById('progressText');
@@ -15,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         errorNetwork  : mainContent.dataset.errorNetwork,
         errorFileType : mainContent.dataset.errorFileType,
         errorFileSize : mainContent.dataset.errorFileSize,
-        uploadUrl     : mainContent.dataset.uploadUrl,
     };
+
+    // ── CSRF 토큰 ─────────────────────────────────────────────────
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
     const MAX_SIZE_MB = 50;
 
@@ -70,7 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(MSG.errorNetwork);
         });
 
-        xhr.open('POST', MSG.uploadUrl);
+        xhr.open('POST', '/api/files');
+        if (csrfToken && csrfHeader) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        }
         xhr.send(formData);
     }
 
@@ -109,29 +114,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // ── 프로필 수정 버튼 ──────────────────────────────────────────
-    const editProfileBtn = document.getElementById('editProfileBtn');
-    if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', () => {
-            // 필요시 모달 또는 페이지 이동으로 교체
-            window.location.href = '/api/v1/users/update/edit';
-        });
-    }
 });
 
 // ── 파일 삭제 (전역: th:onclick에서 호출) ────────────────────────
 async function deleteFile(fileId) {
-    const mainContent = document.getElementById('main-content');
-    const confirmMsg  = mainContent.dataset.confirmDelete;
+    const mainContent  = document.getElementById('main-content');
+    const confirmMsg   = mainContent.dataset.confirmDelete;
     const errorNetwork = mainContent.dataset.errorNetwork;
+
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
     if (!confirm(confirmMsg)) return;
 
     try {
-        const response = await fetch(`/api/v1/user/files/${fileId}`, {
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        const response = await fetch(`/api/files/${fileId}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: headers
         });
 
         if (response.ok) {

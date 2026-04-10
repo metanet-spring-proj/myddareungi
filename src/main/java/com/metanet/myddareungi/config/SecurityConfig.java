@@ -34,7 +34,9 @@ public class SecurityConfig {
 				.loginPage("/login")
 				.permitAll()
 			);
-
+		http.csrf(csrf -> csrf
+			    .ignoringRequestMatchers("/api/files/**")
+			);
 		return http.build();
 	}
 

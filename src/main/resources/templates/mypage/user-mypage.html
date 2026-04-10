@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="#{user.mypage.title}">마이 페이지</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
@@ -19,7 +21,6 @@
 
     <!-- 메인 -->
     <main class="main-content" id="main-content"
-          th:data-upload-url="@{/api/v1/user/files/upload}"
           th:data-confirm-delete="#{msg.confirm.delete}"
           th:data-success-upload="#{msg.success.upload}"
           th:data-error-upload="#{msg.error.upload}"
@@ -64,10 +65,7 @@
                 <div class="upload-desc" th:text="#{upload.desc}">
                     CSV 파일을 이곳에 드래그하거나 버튼을 클릭하여 선택하세요
                 </div>
-                <form th:action="@{/api/v1/user/files/upload}"
-                      method="post"
-                      enctype="multipart/form-data"
-                      id="uploadForm">
+                <form id="uploadForm">
                     <label for="csvFile" class="upload-btn">
                         <i class="fa-solid fa-folder-open"></i>
                         <span th:text="#{upload.btn}">파일 선택하기</span>
@@ -85,7 +83,7 @@
             <div class="card table-card">
                 <div class="table-header">
                     <h3 th:text="#{table.title}">업로드 내역</h3>
-                    <a th:href="@{/api/v1/user/files}" th:text="#{table.viewall}">전체 보기</a>
+                    <a th:href="@{/api/files}" th:text="#{table.viewall}">전체 보기</a>
                 </div>
 
                 <table>
@@ -107,8 +105,7 @@
                             </div>
                         </td>
                         <td>
-                            <span class="date-text"
-                                  th:text="${#temporals.format(file.uploadAt, 'yyyy.MM.dd HH:mm')}">
+                            <span class="date-text" th:text="${file.uploadAt}">
                                 2024.05.15 14:20
                             </span>
                         </td>
@@ -125,13 +122,15 @@
                         </td>
                         <td>
                             <div class="action-buttons">
+                                <!-- PENDING 상태일 때만 삭제 가능 -->
                                 <button th:if="${file.status == 'PENDING'}"
                                         class="review-btn delete-btn"
                                         th:onclick="'deleteFile(' + ${file.fileId} + ')'"
                                         th:title="#{action.delete}">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <a th:href="@{/api/v1/user/files/{fileId}/download(fileId=${file.fileId})}"
+                                <!-- 다운로드 -->
+                                <a th:href="@{/api/files/{fileId}/downloads(fileId=${file.fileId})}"
                                    class="review-btn download-btn"
                                    th:title="#{action.download}">
                                     <i class="fas fa-download"></i>
