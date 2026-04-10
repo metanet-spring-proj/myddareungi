@@ -12,7 +12,11 @@ public interface MemberMapper {
 
 	Member findByEmail(@Param("email") String email);
 
+	Member findByLoginIdAndEmail(@Param("loginId") String loginId, @Param("email") String email);
+
 	int countUsers();
 
 	int insertMember(Member member);
+
+	int updatePasswordByUserId(@Param("userId") Long userId, @Param("password") String password);
 }

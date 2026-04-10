@@ -36,6 +36,23 @@
         WHERE EMAIL = #{email}
     </select>
 
+    <select id="findByLoginIdAndEmail" resultType="com.metanet.myddareungi.domain.member.model.Member">
+        SELECT
+            USER_ID,
+            LOGIN_ID,
+            PASSWORD,
+            USER_NAME,
+            EMAIL,
+            ROLE,
+            CREATED_AT,
+            UPDATED_AT,
+            QUESTION,
+            ANSWER
+        FROM USERS
+        WHERE LOGIN_ID = #{loginId}
+          AND EMAIL = #{email}
+    </select>
+
     <select id="countUsers" resultType="int">
         SELECT COUNT(*)
         FROM USERS
@@ -60,5 +77,12 @@
             #{answer}
         )
     </insert>
+
+    <update id="updatePasswordByUserId">
+        UPDATE USERS
+        SET PASSWORD = #{password},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE USER_ID = #{userId}
+    </update>
 
 </mapper>
