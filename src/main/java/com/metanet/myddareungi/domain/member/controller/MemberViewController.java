@@ -1,5 +1,7 @@
 package com.metanet.myddareungi.domain.member.controller;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,9 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.metanet.myddareungi.domain.files.model.UploadFile;
+import com.metanet.myddareungi.domain.files.service.IUploadFileService;
 import com.metanet.myddareungi.domain.member.model.Member;
 import com.metanet.myddareungi.domain.member.service.MemberAuthService;
-import com.metanet.myddareungi.domain.member.service.MemberSignupService;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberViewController {
 	private final MemberAuthService memberAuthService;
+	 private final IUploadFileService uploadFileService; 
 
 	@GetMapping("/login")
 	public String loginPage(Authentication authentication) {
@@ -35,6 +39,7 @@ public class MemberViewController {
 		}
 		return "member/signup";
 	}
+
 
 	@GetMapping("/member/update")
 	public String updatePage(Authentication authentication, Model model) {
@@ -56,9 +61,29 @@ public class MemberViewController {
 		return "member/forgot-password";
 	}
 
+	@GetMapping("/users/mypage")
+	public String myPage(Authentication authentication, Model model) {
+	    if (!isAuthenticated(authentication)) {
+	        return "redirect:/login";
+	    }
+
+	    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+	    Member member = memberAuthService.getMember(userDetails.getUsername());
+
+	    // 파일 목록 조회 추가
+	    List<UploadFile> fileList = uploadFileService.getAllFilesByUploaderId(member.getUserId());
+
+	    model.addAttribute("userName", member.getUserName());
+	    model.addAttribute("userEmail", member.getEmail());
+	    model.addAttribute("userRoleInfo", member.getRole());
+	    model.addAttribute("fileList", fileList); 
+
+	    return "mypage/user-mypage";
+	}
+
 	private boolean isAuthenticated(Authentication authentication) {
 		return authentication != null
-				&& authentication.isAuthenticated()
-				&& !(authentication instanceof AnonymousAuthenticationToken);
+			&& authentication.isAuthenticated()
+			&& !(authentication instanceof AnonymousAuthenticationToken);
 	}
 }

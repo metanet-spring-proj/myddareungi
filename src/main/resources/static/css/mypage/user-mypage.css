@@ -1,0 +1,225 @@
+/* ================================
+   user-mypage.css
+   admin.css 와 함께 사용
+================================ */
+
+/* ================================
+   프로필 카드 (상단 전체 너비)
+================================ */
+.profile-card {
+    margin-bottom: 24px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-info-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: #003172;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.profile-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.profile-sub {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.edit-profile-btn {
+    background: #f1f4fa;
+    color: #005bbf;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.edit-profile-btn:hover {
+    background: #dbeafe;
+}
+
+.profile-meta {
+    display: flex;
+    gap: 16px;
+}
+
+.info-box {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 14px 20px;
+    min-width: 240px;
+}
+
+.info-box .label {
+    font-size: 11px;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.info-box .value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+/* ================================
+   하단 2열 그리드
+================================ */
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ================================
+   Upload Card
+================================ */
+.upload-card {
+    border: 2px dashed #c1c6d6;
+    text-align: center;
+    padding: 32px 20px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-card.drag-over {
+    border-color: #005bbf;
+    background: #eef4ff;
+}
+
+.upload-icon-box {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 14px;
+    background: #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #005bbf;
+}
+
+.upload-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.upload-desc {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #005bbf;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s;
+}
+
+.upload-btn:hover {
+    background: #004699;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-help {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+/* ================================
+   Upload Progress Bar
+================================ */
+.upload-progress {
+    margin-top: 14px;
+}
+
+.progress-bar {
+    height: 5px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #005bbf;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.progress-text {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* ================================
+   Delete Button
+================================ */
+.delete-btn {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* ================================
+   Empty Row
+================================ */
+.empty-row {
+    text-align: center;
+    padding: 48px 20px !important;
+    color: #94a3b8;
+}
+
+.empty-row i {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #cbd5e1;
+}
