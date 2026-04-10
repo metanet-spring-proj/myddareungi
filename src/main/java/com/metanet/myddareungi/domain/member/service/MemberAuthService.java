@@ -43,6 +43,14 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 		return toUserDetails(getMember(username));
 	}
 
+	public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
+		Member member = memberMapper.getMemberByUserId(userId);
+		if (member == null) {
+			throw new UsernameNotFoundException("존재하지 않는 회원 식별자입니다.");
+		}
+		return toUserDetails(member);
+	}
+
 	public UserDetails toUserDetails(Member member) {
 		return User.withUsername(member.getLoginId())
 			.password(member.getPassword())

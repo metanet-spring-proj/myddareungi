@@ -1,21 +1,30 @@
 package com.metanet.myddareungi.config;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(
+		HttpSecurity http,
+		ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider
+	) throws Exception {
 		http
+			.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(
 					"/swagger-ui/**",
@@ -34,9 +43,11 @@ public class SecurityConfig {
 				.loginPage("/login")
 				.permitAll()
 			);
-		http.csrf(csrf -> csrf
-			    .ignoringRequestMatchers("/api/files/**")
-			);
+
+		jwtAuthenticationFilterProvider.ifAvailable(
+			filter -> http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+		);
+
 		return http.build();
 	}
 

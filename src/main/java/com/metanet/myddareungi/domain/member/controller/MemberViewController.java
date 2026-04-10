@@ -40,7 +40,8 @@ public class MemberViewController {
 		return "member/signup";
 	}
 
-	@GetMapping("/users/update")
+
+	@GetMapping("/member/update")
 	public String updatePage(Authentication authentication, Model model) {
 		if (!isAuthenticated(authentication)) {
 			return "redirect:/login";
@@ -81,7 +82,8 @@ public class MemberViewController {
 	}
 
 	private boolean isAuthenticated(Authentication authentication) {
-		return authentication != null && authentication.isAuthenticated()
-				&& !(authentication instanceof AnonymousAuthenticationToken);
+		return authentication != null
+			&& authentication.isAuthenticated()
+			&& !(authentication instanceof AnonymousAuthenticationToken);
 	}
 }
