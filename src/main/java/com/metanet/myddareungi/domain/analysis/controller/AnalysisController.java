@@ -35,13 +35,13 @@ public class AnalysisController {
         if (request.getPage() == null || request.getPage() <= 0) {
             request.setPage(1);
         }
-        
-        System.out.println("========== 검색 필터 로그 ==========");
-        System.out.println("선택된 월(Month): " + request.getMonth());
-        System.out.println("선택된 구(District): " + request.getDistrict());
-        System.out.println("선택된 연령대(AgeGroup): " + request.getAgeGroup());
-        System.out.println("현재 페이지: " + request.getPage());
-        System.out.println("===================================");
+
+        // System.out.println("========== 검색 필터 로그 ==========");
+        // System.out.println("선택된 월(Month): " + request.getMonth());
+        // System.out.println("선택된 구(District): " + request.getDistrict());
+        // System.out.println("선택된 연령대(AgeGroup): " + request.getAgeGroup());
+        // System.out.println("현재 페이지: " + request.getPage());
+        // System.out.println("===================================");
 
         AnalysisPagedResponse pagedResponse = analysisService.searchAnalysis(request);
 
@@ -49,7 +49,7 @@ public class AnalysisController {
         model.addAttribute("totalElements", pagedResponse.getTotalElements());
         model.addAttribute("totalPages", pagedResponse.getTotalPages());
         model.addAttribute("currentPage", pagedResponse.getCurrentPage());
-        
+
         return "analysis/analysis";
     }
 

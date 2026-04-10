@@ -13,7 +13,7 @@
     <p class="sub-title">대여소별 상세 지표 (Station Stats)</p>
 
     <form th:action="@{/analysis/search}" method="get" id="searchForm">
-        <input type="hidden" name="page" th:value="${currentPage != null ? currentPage : 1}">
+        <input type="hidden" name="page" value="1">
         
         <div class="filter-section">
             <select name="month" class="filter-select">
