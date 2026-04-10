@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DashboardPageController {
 
     @GetMapping
-    public String dashboardPage() {
+    public String dashboardPage(org.springframework.ui.Model model) {
+        model.addAttribute("activeMenu", "dashboard");
         return "dashboard/dashboard";
     }
 }

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <aside class="sidebar" th:fragment="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">🚲</div>
+            <div>
+                <div class="logo-title" th:text="#{sidebar.logo.title}">따릉이</div>
+                <div class="logo-sub" th:text="#{sidebar.logo.sub}">Infrastructure Portal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a th:href="@{/dashboard}" 
+               class="menu-item" 
+               th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}" th:text="#{sidebar.menu.dashboard}">대시보드</a>
+            <a th:href="@{/api/v1/analysis/search}" 
+               class="menu-item" 
+                th:classappend="${activeMenu == 'analysis' ? 'active' : ''}" th:text="#{sidebar.menu.analysis}">분석</a>
+            <!-- [JWT 분기 처리 가이드]
+                 <a sec:authorize="hasRole('ADMIN')" th:href="@{/api/v1/admin/mypage}" class="menu-item" th:classappend="${activeMenu == 'mypage' ? 'active' : ''}">관리자 마이페이지</a>
+                 <a sec:authorize="hasRole('USER')" th:href="@{/api/v1/user/mypage}" class="menu-item" th:classappend="${activeMenu == 'mypage' ? 'active' : ''}">마이페이지</a>
+            -->
+            <a th:href="@{/api/v1/admin/mypage}" 
+               class="menu-item" 
+               th:classappend="${activeMenu == 'mypage' ? 'active' : ''}" th:text="#{sidebar.menu.mypage}">마이페이지</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#" class="menu-item" th:text="#{sidebar.menu.signout}">Sign Out</a>
+        </div>
+    </aside>
+</body>
+</html>

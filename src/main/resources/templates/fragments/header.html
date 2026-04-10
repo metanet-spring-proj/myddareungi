@@ -1,0 +1,20 @@
+<header class="topbar" th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+    <div class="topbar-left">
+        <h1 class="brand" th:text="#{header.brand}">메타넷</h1>
+    </div>
+    <div class="topbar-right">
+        <!-- 언어 선택기 -->
+        <div class="lang-switcher">
+            <a th:href="@{''(lang='ko')}" th:classappend="${#locale.language == 'ko'} ? 'active' : ''">KOR</a>
+            <span class="divider">|</span>
+            <a th:href="@{''(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">ENG</a>
+        </div>
+        
+        <button class="icon-btn">
+            <i class="fa-regular fa-bell"></i>
+        </button>
+        <div class="profile-thumb">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+</header>
