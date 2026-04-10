@@ -6,7 +6,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import java.security.Principal;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,9 +35,15 @@ public class AnalysisController {
     @Operation(summary = "상세 데이터 검색", description = "월, 자치구, 연령대 필터를 사용하여 따릉이 이용 통계를 조회합니다.")
     @GetMapping("/search")
     public String searchAnalysis(
-
             @ModelAttribute("request") AnalysisSearchRequest request,
+            Principal principal,
             Model model) {
+
+        if (principal != null) {
+            model.addAttribute("username", principal.getName());
+            // System.out.println("JWT 인증 확인: " + principal.getName());
+        }
+
 
         if (request.getPage() == null || request.getPage() <= 0) {
             request.setPage(1);
@@ -62,9 +70,14 @@ public class AnalysisController {
     @Operation(summary = "분석 데이터 CSV 내보내기", description = "현재 필터링된 모든 분석 데이터를 CSV 파일로 다운로드합니다.")
     @GetMapping("/export/csv")
     public void exportCsv(
-
             @ModelAttribute("request") AnalysisSearchRequest request,
+            Principal principal,
             HttpServletResponse response) throws IOException {
+
+        if (principal != null) {
+             // System.out.println("JWT 인증을 통한 CSV 다운로드 시도: " + principal.getName());
+        }
+
 
         List<AnalysisResponse> allData = analysisService.listAllAnalysis(request);
 
