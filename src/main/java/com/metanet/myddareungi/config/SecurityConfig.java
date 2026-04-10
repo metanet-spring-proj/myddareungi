@@ -51,13 +51,11 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-  
 //    로컬 개발시 모든 경로 security 허용
 //    @Bean
 //    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
@@ -65,3 +63,4 @@ public class SecurityConfig {
 //        return http.build();
 //    }
 }
+

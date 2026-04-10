@@ -13,12 +13,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.metanet.myddareungi.common.exception.member.MemberNotFoundException;
+import com.metanet.myddareungi.domain.member.dto.MemberUpdateRequestDto;
 import com.metanet.myddareungi.domain.member.model.Member;
 import com.metanet.myddareungi.domain.member.repository.MemberMapper;
 
 @Profile("!view")
 @Service
-public class MemberAuthService implements UserDetailsService {
+public class MemberAuthService implements UserDetailsService, IMemberService {
 
 	private final MemberMapper memberMapper;
 	private final PasswordEncoder passwordEncoder;
@@ -77,4 +79,51 @@ public class MemberAuthService implements UserDetailsService {
 		}
 		return List.of(new SimpleGrantedAuthority(authority));
 	}
+	
+
+
+	//전체 회원 조회
+	@Override
+	public List<Member> getMemberList() {
+        return memberMapper.getMemberList();
+
+	}
+
+	// 회원 정보 수정
+	@Override
+	public Member updateMember(Long userId, MemberUpdateRequestDto dto) {
+	    Member member = memberMapper.getMemberByUserId(userId);
+	    if (member == null) {
+	        throw new MemberNotFoundException(userId);
+	    }
+
+	    Member updatedMember = Member.builder()
+	        .userId(userId)
+	        .userName(dto.getUserName())
+	        .email(dto.getEmail())
+	        .build();
+
+	    memberMapper.updateMember(updatedMember);
+	    return memberMapper.getMemberByUserId(userId);
+	}
+	//회원 삭제(탈퇴)
+	@Override
+	public void deleteMember(Long userId) {
+		Member member = memberMapper.getMemberByUserId(userId);
+        if (member == null) {
+            throw new MemberNotFoundException(userId);
+        }
+        memberMapper.deleteMember(userId);
+	}
+
+	@Override
+	public Member getMemberByUserId(Long userId) {
+		Member member = memberMapper.getMemberByUserId(userId);
+        if (member == null) {
+            throw new MemberNotFoundException(userId);
+        }
+        return member;
+	}
+
+
 }
