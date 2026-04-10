@@ -5,18 +5,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.metanet.myddareungi.domain.notification.repository.INotificationRepository">
     <!--  알림 목록 조회  -->
-	<select id="findAllByUserId" resultMap="NotificationResultMap"> SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT FROM NOTIFICATION WHERE USER_ID = #{userId} ORDER BY CREATED_AT DESC </select>
+	<select id="findAll" resultType="com.metanet.myddareungi.domain.notification.model.Notification"> SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT FROM NOTIFICATION ORDER BY CREATED_AT DESC </select>
 	<!--  알림 읽음 처리  -->
-	<update id="markAsRead"> UPDATE NOTIFICATION SET IS_READ = 1 WHERE NOTIFICATION_ID = #{notificationId} </update>
+	<update id="markAsRead" parameterType="long"> UPDATE NOTIFICATION SET IS_READ = 1 WHERE NOTIFICATION_ID = #{notificationId} </update>
 	<!--  알림 전체 읽음 처리  -->
-	<update id="markReadAll"> UPDATE NOTIFICATION SET IS_READ = 1 </update>
+	<update id="markAllRead"> UPDATE NOTIFICATION SET IS_READ = 1 </update>
 	
 	<!--  알림 삭제  -->
-	<delete id="deleteById"> DELETE FROM NOTIFICATION WHERE NOTIFICATION_ID = #{notificationId} </delete>
+	<delete id="deleteById" parameterType="long"> DELETE FROM NOTIFICATION WHERE NOTIFICATION_ID = #{notificationId} </delete>
 	
-	<insert id="insert" parameterType="com.metanet.myddareungi.domain.notification.dto.NotificationCreateDto">
-	    INSERT INTO NOTIFICATION (USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT)
-	    VALUES (#{userId}, #{notificationType}, #{message}, #{fileId}, 0, NOW())
+	<insert id="insert" parameterType="com.metanet.myddareungi.domain.notification.model.Notification">
+	    INSERT INTO NOTIFICATION (USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, CREATED_AT)
+	    VALUES (#{userId}, #{notificationType}, #{message}, #{fileId}, NOW())
 	</insert>
 	
 	

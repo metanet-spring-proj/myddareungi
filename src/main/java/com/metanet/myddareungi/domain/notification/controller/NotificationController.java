@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class NotificationController {
 	private final INotificationService notificationService;
 
+	
 	// 알림 목록 조회
 	@GetMapping
 	public ResponseEntity<List<Notification>> getNotifications() {
