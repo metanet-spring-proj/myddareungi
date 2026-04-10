@@ -1,12 +1,12 @@
 package com.metanet.myddareungi.domain.member.service;
 
+import com.metanet.myddareungi.config.CustomUserDetails;
 import java.util.List;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,10 +52,12 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 	}
 
 	public UserDetails toUserDetails(Member member) {
-		return User.withUsername(member.getLoginId())
-			.password(member.getPassword())
-			.authorities(resolveAuthority(member.getRole()))
-			.build();
+		return new CustomUserDetails(
+			member.getUserId(),
+			member.getLoginId(),
+			member.getPassword(),
+			resolveAuthority(member.getRole())
+		);
 	}
 
 	public Member getMember(String loginId) {

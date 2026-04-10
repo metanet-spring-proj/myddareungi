@@ -16,9 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
         errorFileSize : mainContent.dataset.errorFileSize,
     };
 
-    // ── CSRF 토큰 ─────────────────────────────────────────────────
-    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    // ── CSRF 토큰 (메타 태그 + 쿠키 기반) ──────────────────────────
+    function getCookie(name) {
+        let value = "; " + document.cookie;
+        let parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return null;
+    }
+
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || getCookie('XSRF-TOKEN');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-XSRF-TOKEN';
 
     const MAX_SIZE_MB = 50;
 
@@ -73,8 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         xhr.open('POST', '/api/files');
-        if (csrfToken && csrfHeader) {
-            xhr.setRequestHeader(csrfHeader, csrfToken);
+        
+        // 최종적으로 쿠키에서 최신 값을 한 번 더 확인 (보안 강화)
+        const activeToken = getCookie('XSRF-TOKEN') || csrfToken;
+        
+        if (activeToken) {
+            xhr.setRequestHeader('X-XSRF-TOKEN', activeToken);
+            if (csrfHeader && csrfHeader !== 'X-XSRF-TOKEN') {
+                xhr.setRequestHeader(csrfHeader, activeToken);
+            }
         }
         xhr.send(formData);
     }
@@ -128,9 +142,14 @@ async function deleteFile(fileId) {
     if (!confirm(confirmMsg)) return;
 
     try {
+        const activeToken = getCookie('XSRF-TOKEN') || csrfToken;
         const headers = { 'Content-Type': 'application/json' };
-        if (csrfToken && csrfHeader) {
-            headers[csrfHeader] = csrfToken;
+        
+        if (activeToken) {
+            headers['X-XSRF-TOKEN'] = activeToken;
+            if (csrfHeader && csrfHeader !== 'X-XSRF-TOKEN') {
+                headers[csrfHeader] = activeToken;
+            }
         }
 
         const response = await fetch(`/api/files/${fileId}`, {

@@ -12,6 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -19,34 +29,40 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(
-		HttpSecurity http,
-		ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider
-	) throws Exception {
+			HttpSecurity http,
+			ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider) throws Exception {
 		http
-			.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(
-					"/swagger-ui/**",
-					"/swagger-ui.html",
-					"/v3/api-docs/**",
-					"/v3/api-docs"
-				).permitAll()
-				.requestMatchers(HttpMethod.GET, "/", "/home", "/login", "/signup", "/password/forgot").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/v1/auth/password/question", "/api/v1/auth/password/reset").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/v1/users/signup").permitAll()
-				.requestMatchers("/css/**").permitAll()
-				.anyRequest().authenticated()
-			)
-			.formLogin(form -> form
-				.loginPage("/login")
-				.permitAll()
-			);
+				.csrf(csrf -> {
+					CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+					requestHandler.setCsrfRequestAttributeName(null);
+					csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+							.csrfTokenRequestHandler(requestHandler);
+				})
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(
+								"/swagger-ui/**",
+								"/swagger-ui.html",
+								"/v3/api-docs/**",
+								"/v3/api-docs")
+						.permitAll()
+						.requestMatchers(HttpMethod.GET, "/", "/home", "/login", "/signup", "/password/forgot")
+						.permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/auth/password/question",
+								"/api/v1/auth/password/reset")
+						.permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/users/signup").permitAll()
+						.requestMatchers("/css/**").permitAll()
+						.anyRequest().authenticated())
+				.formLogin(form -> form
+						.loginPage("/login")
+						.permitAll());
 
 		jwtAuthenticationFilterProvider.ifAvailable(
-			filter -> http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-		);
+				filter -> http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class));
+
+		http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
 		return http.build();
 	}
@@ -56,11 +72,24 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-//    로컬 개발시 모든 경로 security 허용
-//    @Bean
-//    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-//        return http.build();
-//    }
-}
+	private static final class CsrfCookieFilter extends OncePerRequestFilter {
+		@Override
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+				FilterChain filterChain)
+				throws ServletException, IOException {
+			CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+			if (csrfToken != null) {
+				csrfToken.getToken();
+			}
+			filterChain.doFilter(request, response);
+		}
+	}
 
+	// 로컬 개발시 모든 경로 security 허용
+	// @Bean
+	// public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception
+	// {
+	// http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+	// return http.build();
+	// }
+}
