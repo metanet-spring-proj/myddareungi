@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "../mybatis-3-mapper.dtd">
+
 <mapper namespace="com.metanet.myddareungi.domain.member.repository.MemberMapper">
 
     <select id="findByLoginId" parameterType="string" resultType="com.metanet.myddareungi.domain.member.model.Member">
@@ -36,6 +35,23 @@
         WHERE EMAIL = #{email}
     </select>
 
+    <select id="findByLoginIdAndEmail" resultType="com.metanet.myddareungi.domain.member.model.Member">
+        SELECT
+            USER_ID,
+            LOGIN_ID,
+            PASSWORD,
+            USER_NAME,
+            EMAIL,
+            ROLE,
+            CREATED_AT,
+            UPDATED_AT,
+            QUESTION,
+            ANSWER
+        FROM USERS
+        WHERE LOGIN_ID = #{loginId}
+          AND EMAIL = #{email}
+    </select>
+
     <select id="countUsers" resultType="int">
         SELECT COUNT(*)
         FROM USERS
@@ -60,5 +76,50 @@
             #{answer}
         )
     </insert>
+      <!-- 회원 단건 조회 -->
+    <select id="getMemberByUserId" parameterType="long" resultType="Member">
+        SELECT USER_ID, LOGIN_ID, PASSWORD, USER_NAME,
+               EMAIL, ROLE, CREATED_AT, UPDATED_AT, QUESTION, ANSWER
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!-- 회원 전체 조회-->
+    <select id="getMemberList" resultType="Member">
+        SELECT USER_ID, LOGIN_ID, PASSWORD, USER_NAME,
+               EMAIL, ROLE, CREATED_AT, UPDATED_AT, QUESTION, ANSWER
+        FROM USERS
+        ORDER BY CREATED_AT DESC
+    </select>
+      <!-- 수정 -->
+    <update id="updateMember" parameterType="Member">
+        UPDATE USERS
+        <set>
+            <if test="userName != null and userName != ''">
+                USER_NAME = #{userName},
+            </if>
+            <if test="email != null and email != ''">
+                EMAIL = #{email},
+            </if>
+            <if test="password != null and password != ''">
+                PASSWORD = #{password},
+            </if>
+            UPDATED_AT = SYSDATE
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!-- 회원 삭제 -->
+    <delete id="deleteMember" parameterType="long">
+        DELETE FROM USERS
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <update id="updatePasswordByUserId">
+        UPDATE USERS
+        SET PASSWORD = #{password},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE USER_ID = #{userId}
+    </update>
 
 </mapper>

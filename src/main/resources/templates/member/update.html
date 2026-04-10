@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+	<title>따릉이 회원정보 수정</title>
+	<link rel="stylesheet" th:href="@{/css/member/signup.css}">
+</head>
+
+<body>
+	<main class="signup-page">
+		<div class="signup-shell">
+			<section class="signup-main">
+				<section class="signup-brand" aria-label="서비스 소개">
+					<div class="brand-copy">
+						<h1>Seoul Bike<br>Data Analysis</h1>
+						<p>2025 서울시 따릉이 이용 현황 분석 대시보드는 시민의 이동 데이터를 통해 더 스마트한 도시를 설계합니다.</p>
+
+						<div class="feature-list">
+							<article class="feature-item">
+								<span class="feature-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M4 16L9 11L13 15L20 8" stroke="currentColor" stroke-width="2.5"
+											stroke-linecap="round" stroke-linejoin="round" />
+										<path d="M16 8H20V12" stroke="currentColor" stroke-width="2.5"
+											stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								</span>
+								<div>
+									<h2>실시간 데이터 통찰</h2>
+									<p>수만 건의 이용 데이터를 초 단위로 분석하여 가독성 높은 시각화를 제공합니다.</p>
+								</div>
+							</article>
+
+							<article class="feature-item">
+								<span class="feature-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path
+											d="M18.5 6.5C14 6.5 9.5 10.25 8 15.5C10 17 12 17.5 13.5 17.5C18 17.5 21 13.5 21 9C21 7.5 20.3 6.5 18.5 6.5Z"
+											stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+										<path d="M8 15.5C7 14 6.5 12.5 6.5 11C6.5 8 8.5 5 11.5 3.5"
+											stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+									</svg>
+								</span>
+								<div>
+									<h2>탄소 저감 기여도</h2>
+									<p>친환경 이동 수단 사용에 따른 환경적 가치를 정량적으로 확인하세요.</p>
+								</div>
+							</article>
+						</div>
+					</div>
+				</section>
+
+				<section class="signup-panel" aria-labelledby="update-title">
+					<div class="signup-content">
+						<header class="signup-header">
+							<h2 id="update-title">회원정보 수정</h2>
+							<p>변경할 정보를 입력해 주세요.</p>
+						</header>
+
+						<div class="signup-message error-message" id="update-error" hidden></div>
+						<div class="signup-message success-message" id="update-success" hidden></div>
+
+						<form id="update-form" class="signup-form" novalidate>
+							<div class="field-grid">
+
+								<div class="field-group">
+									<label for="userName">이름</label>
+									<input id="userName" name="userName" type="text"
+										th:value="${member?.userName}"
+										placeholder="홍길동" autocomplete="name" required>
+								</div>
+
+								<div class="field-group">
+									<label for="email">이메일</label>
+									<input id="email" name="email" type="email"
+										th:value="${member?.email}"
+										placeholder="example@seoul.go.kr" autocomplete="email" required>
+								</div>
+
+							</div>
+
+							<button id="update-submit" class="signup-button" type="submit">수정 완료</button>
+						</form>
+
+						<p class="signup-login-text">
+							<a th:href="@{/}">홈으로 돌아가기</a>
+						</p>
+					</div>
+				</section>
+			</section>
+
+			<footer class="signup-footer">
+				<p>© 2025 Seoul Metropolitan Government. All Data sourced from Seoul Public Data Portal.</p>
+				<div class="footer-links">
+					<a href="#" onclick="return false;">Privacy Policy</a>
+					<a href="#" onclick="return false;">Terms of Service</a>
+					<a href="#" onclick="return false;">API Documentation</a>
+				</div>
+			</footer>
+		</div>
+	</main>
+
+	<script th:inline="javascript">
+		(() => {
+			const form = document.getElementById('update-form');
+			const submitButton = document.getElementById('update-submit');
+			const errorBox = document.getElementById('update-error');
+			const successBox = document.getElementById('update-success');
+			const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+			const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+			const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
+			const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN';
+
+			const userId = /*[[${member?.userId}]]*/ null;
+
+			const showMessage = (element, message) => {
+				element.textContent = message;
+				element.hidden = false;
+			};
+
+			const clearMessages = () => {
+				errorBox.hidden = true;
+				successBox.hidden = true;
+				errorBox.textContent = '';
+				successBox.textContent = '';
+			};
+
+			const toggleSubmitting = (isSubmitting) => {
+				submitButton.disabled = isSubmitting;
+				submitButton.textContent = isSubmitting ? '수정 처리 중...' : '수정 완료';
+			};
+
+			const readField = (name) => {
+				const value = form.elements[name].value;
+				return typeof value === 'string' ? value.trim() : value;
+			};
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				clearMessages();
+
+				const payload = {
+					userName: readField('userName'),
+					email: readField('email')
+				};
+
+				toggleSubmitting(true);
+
+				try {
+					const headers = { 'Content-Type': 'application/json' };
+					if (csrfToken) headers[csrfHeader] = csrfToken;
+
+					const response = await fetch(`/api/v1/users/${userId}`, {
+						method: 'PUT',
+						headers,
+						credentials: 'same-origin',
+						body: JSON.stringify(payload)
+					});
+
+					if (!response.ok) {
+						showMessage(errorBox, '수정 중 오류가 발생했습니다.');
+						return;
+					}
+
+					window.location.href = '/dashboard';
+
+				} catch (error) {
+					showMessage(errorBox, '요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+				} finally {
+					toggleSubmitting(false);
+				}
+			});
+		})();
+	</script>
+</body>
+
+</html>
