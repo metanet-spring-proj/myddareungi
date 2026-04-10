@@ -12,6 +12,8 @@ public interface MemberMapper {
 
 	Member findByLoginId(@Param("loginId") String loginId);
 
+	Member findByUserId(@Param("userId") Long userId);
+
 	Member findByEmail(@Param("email") String email);
 
 	Member findByLoginIdAndEmail(@Param("loginId") String loginId, @Param("email") String email);

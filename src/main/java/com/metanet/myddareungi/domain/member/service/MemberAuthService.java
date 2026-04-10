@@ -31,7 +31,7 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 	}
 
 	public Member authenticate(String loginId, String rawPassword) {
-		Member member = getMember(loginId);
+		Member member = getMemberByLoginId(loginId);
 		if (!passwordEncoder.matches(rawPassword, member.getPassword())) {
 			throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
 		}
@@ -40,7 +40,11 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return toUserDetails(getMember(username));
+		return toUserDetails(getMemberByLoginId(username));
+	}
+
+	public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
+		return toUserDetails(getMemberByUserId(userId));
 	}
 
 	public UserDetails toUserDetails(Member member) {
@@ -50,10 +54,18 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 			.build();
 	}
 
-	public Member getMember(String loginId) {
+	private Member getMemberByLoginId(String loginId) {
 		Member member = memberMapper.findByLoginId(loginId);
 		if (member == null) {
 			throw new UsernameNotFoundException("존재하지 않는 로그인 아이디입니다.");
+		}
+		return member;
+	}
+
+	private Member getMemberByUserId(Long userId) {
+		Member member = memberMapper.findByUserId(userId);
+		if (member == null) {
+			throw new UsernameNotFoundException("존재하지 않는 회원 식별자입니다.");
 		}
 		return member;
 	}
