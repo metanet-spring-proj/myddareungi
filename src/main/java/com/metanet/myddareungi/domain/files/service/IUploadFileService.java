@@ -12,4 +12,5 @@ public interface IUploadFileService {
 
 	void deleteFile(long fileId);
 	void reviewFile(long fileId, String status, long reviewedBy);
+	long getLastFileId();
 }

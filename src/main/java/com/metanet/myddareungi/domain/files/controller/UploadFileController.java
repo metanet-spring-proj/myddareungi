@@ -1,6 +1,7 @@
 package com.metanet.myddareungi.domain.files.controller;
 
 import com.metanet.myddareungi.config.CustomUserDetails;
+import com.metanet.myddareungi.domain.admin.service.AdminService;
 import org.springframework.security.core.Authentication;
 
 import java.io.File;
@@ -39,6 +40,8 @@ import com.metanet.myddareungi.domain.notification.service.INotificationService;
 @RequestMapping("/api/files")
 public class UploadFileController {
 
+    private final AdminService adminService;
+
 	private static final Logger log = LoggerFactory.getLogger(UploadFileController.class);
 
 	@Autowired
@@ -49,6 +52,10 @@ public class UploadFileController {
 
 	@Value("${file.upload-dir}")
 	private String uploadDir;
+
+    UploadFileController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 	
 	@PostMapping
 	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Authentication authentication) {
@@ -84,6 +91,12 @@ public class UploadFileController {
 			System.out.println("파일 DB 저장 시작: " + originalFileName);
 			uploadFileService.uploadFile(uploadFile);
 
+			notificationService.insert(
+					userDetails.getUserId(), 
+					"PENDING", 
+					"CSV파일이 업로드 되었습니다.",
+					uploadFileService.getLastFileId());
+			
 			return ResponseEntity.status(HttpStatus.CREATED).body("파일 업로드 성공");
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -36,6 +36,7 @@ public class NotificationService implements INotificationService {
 
 	@Override
 	public void insert(long userId, String notificationType, String message, long fileId) {
+		System.out.println("notification generate");
 		Notification notification = new Notification();
 		notification.setUserId(userId);
 		notification.setNotificationType(notificationType);

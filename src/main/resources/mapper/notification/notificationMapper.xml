@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insert" parameterType="com.metanet.myddareungi.domain.notification.model.Notification">
 	    INSERT INTO NOTIFICATION (USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, CREATED_AT)
-	    VALUES (#{userId}, #{notificationType}, #{message}, #{fileId}, NOW())
+	    VALUES (#{userId}, #{notificationType}, #{message}, #{fileId}, CURRENT_TIMESTAMP)
 	</insert>
 	
 	

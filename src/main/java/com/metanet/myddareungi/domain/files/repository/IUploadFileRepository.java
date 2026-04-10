@@ -16,5 +16,5 @@ public interface IUploadFileRepository {
 	
 	void deleteFile(long fileId);
 	void reviewFile(UploadFile file);
-	
+	Long getLastFileId();
 }
