@@ -13,4 +13,9 @@ public class MemberViewController {
 	public String loginPage() {
 		return "member/login";
 	}
+
+	@GetMapping("/signup")
+	public String signupPage() {
+		return "member/signup";
+	}
 }
