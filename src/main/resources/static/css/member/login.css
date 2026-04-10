@@ -10,6 +10,8 @@
     --button-bg: #005bbf;
     --button-shadow: rgba(0, 91, 191, 0.1);
     --card-shadow: rgba(0, 91, 191, 0.06);
+    --success-bg: #ecfdf3;
+    --success-text: #027a48;
 }
 
 * {
@@ -149,6 +151,11 @@ body {
 .error-message {
     background: #fff1f2;
     color: #b42318;
+}
+
+.success-message {
+    background: var(--success-bg);
+    color: var(--success-text);
 }
 
 .field-group {

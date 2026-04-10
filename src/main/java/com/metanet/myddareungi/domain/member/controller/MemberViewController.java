@@ -49,6 +49,14 @@ public class MemberViewController {
         return "member/update";
     }
 
+	@GetMapping("/password/forgot")
+	public String forgotPasswordPage(Authentication authentication) {
+		if (isAuthenticated(authentication)) {
+			return "redirect:/dashboard";
+		}
+		return "member/forgot-password";
+	}
+
 	private boolean isAuthenticated(Authentication authentication) {
 		return authentication != null
 			&& authentication.isAuthenticated()

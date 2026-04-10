@@ -14,6 +14,8 @@ public interface MemberMapper {
 
 	Member findByEmail(@Param("email") String email);
 
+	Member findByLoginIdAndEmail(@Param("loginId") String loginId, @Param("email") String email);
+
 	int countUsers();
 
 	int insertMember(Member member);
@@ -29,4 +31,8 @@ public interface MemberMapper {
     
     //회원 삭제(탈퇴)
     int deleteMember(@Param("userId") Long userId);  
+
+
+	int updatePasswordByUserId(@Param("userId") Long userId, @Param("password") String password);
+
 }
