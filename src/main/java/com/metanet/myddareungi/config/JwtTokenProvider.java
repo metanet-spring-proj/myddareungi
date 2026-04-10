@@ -33,11 +33,15 @@ public class JwtTokenProvider {
 	}
 
 	public String createAccessToken(Member member) {
+		if (member.getUserId() == null) {
+			throw new IllegalArgumentException("JWT 발급을 위한 회원 식별자가 없습니다.");
+		}
+
 		Instant now = Instant.now();
 		Instant expiry = now.plus(accessTokenExpiration);
 
 		return Jwts.builder()
-			.subject(member.getLoginId())
+			.subject(String.valueOf(member.getUserId()))
 			.claim("role", member.getRole())
 			.issuedAt(Date.from(now))
 			.expiration(Date.from(expiry))
@@ -50,8 +54,8 @@ public class JwtTokenProvider {
 		return true;
 	}
 
-	public String extractLoginId(String token) {
-		return parseClaims(token).getSubject();
+	public Long extractUserId(String token) {
+		return Long.parseLong(parseClaims(token).getSubject());
 	}
 
 	public long getAccessTokenExpirationSeconds() {
