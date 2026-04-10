@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.service.IUploadFileService;
+import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
 @RestController
 @RequestMapping("/api/files")
@@ -35,6 +36,9 @@ public class UploadFileController {
 	@Autowired
 	private IUploadFileService uploadFileService;
 
+	@Autowired
+	private INotificationService notificationService;
+	
 	@PostMapping
 	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
 		// ,Principal principal) {
