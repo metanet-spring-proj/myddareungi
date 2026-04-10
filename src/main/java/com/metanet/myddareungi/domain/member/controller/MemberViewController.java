@@ -61,7 +61,7 @@ public class MemberViewController {
 		return "member/forgot-password";
 	}
 
-	@GetMapping("/users/mypage")
+	@GetMapping("/user-mypage")
 	public String myPage(Authentication authentication, Model model) {
 	    if (!isAuthenticated(authentication)) {
 	        return "redirect:/login";
