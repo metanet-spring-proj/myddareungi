@@ -1,5 +1,5 @@
 
-  const notifications = [
+ /* const notifications = [
     {
       id: 1,
       title: "업로드 검토 완료",
@@ -21,7 +21,7 @@
       timeText: "2일 전",
       isRead: false
     }
-  ];
+  ];*/
 
   const notificationTrigger = document.getElementById("notificationTrigger");
   const notificationPopover = document.getElementById("notificationPopover");
@@ -31,46 +31,87 @@
   const markAllReadBtn = document.getElementById("markAllReadBtn");
   const viewAllBtn = document.getElementById("viewAllBtn");
 
-  function getUnreadCount() {
+  function getCookie(name) {
+          let value = "; " + document.cookie;
+          let parts = value.split("; " + name + "=");
+          if (parts.length === 2) return parts.pop().split(";").shift();
+          return null;
+	}
+
+	function getCsrfToken() {
+	      return document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || getCookie('XSRF-TOKEN');
+	  }
+	  function getCsrfHeader() {
+	      return document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-XSRF-TOKEN';
+	  }
+	  
+	  
+  function formatTime(timestamp) {
+        const now = new Date();
+        const created = new Date(timestamp);
+
+        const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const createdDate = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+        const diffDays = Math.round((nowDate - createdDate) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            return created.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        } else if (diffDays === 1) {
+            return '어제';
+        } else {
+            return `${diffDays}일 전`;
+        }
+    }
+	  
+	  
+  
+ /* function getUnreadCount() {
     return notifications.filter(item => !item.isRead).length;
-  }
+  }*/
 
-  function updateUnreadUI() {
-    const unreadCount = getUnreadCount();
-    notificationCount.textContent = unreadCount;
-
-    if (unreadCount > 0) {
-      notificationDot.classList.add("show");
-    } else {
-      notificationDot.classList.remove("show");
-    }
-  }
-
-  function renderNotifications() {
-    if (notifications.length === 0) {
-      notificationList.innerHTML = `
-        <div class="notification-empty">표시할 알림이 없습니다.</div>
-      `;
-      updateUnreadUI();
-      return;
+  function updateUnreadUI(unreadCount) {
+        notificationCount.textContent = unreadCount;
+        if (unreadCount > 0) {
+            notificationDot.classList.add("show");
+        } else {
+            notificationDot.classList.remove("show");
+        }
     }
 
-    notificationList.innerHTML = notifications.map(item => `
-      <div class="notification-item ${item.isRead ? "" : "unread"}" data-id="${item.id}">
-        <div class="notification-item-top">
-          <div class="notification-item-title">${item.title}</div>
-          <div class="notification-item-time">${item.timeText}</div>
-        </div>
-        <div class="notification-item-message">${item.message}</div>
-      </div>
-    `).join("");
+	function renderNotifications(notifications) {
+	    if (notifications.length === 0) {
+	        notificationList.innerHTML = `
+	            <div class="notification-empty">표시할 알림이 없습니다.</div>
+	        `;
+	        updateUnreadUI(0);
+	        return;
+	    }
+	
+	    notificationList.innerHTML = notifications.map(item => `
+	        <div class="notification-item ${item.isRead === 0 ? "unread" : ""}" data-id="${item.notificationId}">
+	            <div class="notification-item-top">
+	                <div class="notification-item-title">${item.notificationType}</div>
+	                <div class="notification-item-time">${formatTime(item.createdAt)}</div>
+	            </div>
+	            <div class="notification-item-message">${item.message}</div>
+	        </div>
+	    `).join("");
+	
+	    const unreadCount = notifications.filter(n => n.isRead === 0).length;
+	    updateUnreadUI(unreadCount);
+	}
 
-    updateUnreadUI();
-  }
-
+	function loadNotifications() {
+	      fetch('/api/v1/notifications/unread')
+		  	.then(res => res.json())
+	      	.then(data => renderNotifications(data));
+	  }
+	
+	
   function openPopover() {
     notificationPopover.hidden = false;
     notificationTrigger.setAttribute("aria-expanded", "true");
+	loadNotifications();
   }
 
   function closePopover() {
@@ -107,32 +148,32 @@
   });
 
   notificationList.addEventListener("click", function (e) {
-    const item = e.target.closest(".notification-item");
-    if (!item) return;
+	const item = e.target.closest(".notification-item");
+	      if (!item) return;
 
-    const id = Number(item.dataset.id);
-    const target = notifications.find(n => n.id === id);
-
-    if (target) {
-      target.isRead = true;
-      renderNotifications();
-
-      console.log("클릭한 알림:", target);
-      // 여기서 상세 페이지 이동 가능
-      // location.href = "/notification/" + id;
-    }
-  });
+	      const id = Number(item.dataset.id);
+	      fetch(`/api/v1/notifications/${id}/read`, {
+	          method: 'PATCH',
+	          headers: { [getCsrfHeader()]: getCsrfToken() }
+	      }).then(() => loadNotifications());
+	  });
 
   markAllReadBtn.addEventListener("click", function () {
-    notifications.forEach(item => {
-      item.isRead = true;
+        fetch('/api/v1/notifications/read', {
+            method: 'PATCH',
+            headers: { [getCsrfHeader()]: getCsrfToken()}
+        }).then(() => loadNotifications());
     });
-    renderNotifications();
-  });
 
-  viewAllBtn.addEventListener("click", function () {
-    console.log("전체 보기 클릭");
-    // location.href = "/notifications";
-  });
+	viewAllBtn.addEventListener("click", function () {
+		fetch('/api/v1/notifications')
+			.then(res => res.json())
+		    .then(data => renderNotifications(data));
+	  });
+	  
+  // 페이지 로드 시 읽지 않은 알림 dot 표시
+    fetch('/api/v1/notifications')
+        .then(res => res.json())
+        .then(data => updateUnreadUI(data.length));
+		
 
-  renderNotifications();

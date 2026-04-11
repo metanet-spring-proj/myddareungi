@@ -15,10 +15,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ORDER BY CREATED_AT DESC 
 	</select>
 	
+	<!-- 미읽음 알림 조회-->
+	<select id="findUnreadById" parameterType="long" resultType="com.metanet.myddareungi.domain.notification.model.Notification">
+	      SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT 
+	      FROM NOTIFICATION
+	      WHERE USER_ID = #{userId} AND IS_READ = 0
+	      ORDER BY CREATED_AT DESC
+	 </select>
+	
+	
 	<!--  알림 읽음 처리  -->
 	<update id="markAsRead" parameterType="long"> UPDATE NOTIFICATION SET IS_READ = 1 WHERE NOTIFICATION_ID = #{notificationId} </update>
 	<!--  알림 전체 읽음 처리  -->
-	<update id="markAllRead"> UPDATE NOTIFICATION SET IS_READ = 1 </update>
+	<update id="markAllRead" parameterType="long"> UPDATE NOTIFICATION SET IS_READ = 1 WHERE USER_ID = #{userId} </update>
 	
 	<!--  알림 삭제  -->
 	<delete id="deleteById" parameterType="long"> DELETE FROM NOTIFICATION WHERE NOTIFICATION_ID = #{notificationId} </delete>

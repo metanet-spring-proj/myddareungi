@@ -32,6 +32,14 @@ public class NotificationController {
 		return ResponseEntity.ok(notifications);
 	}
 	
+	// 읽지 않은 알림만 조회
+	@GetMapping("/unread")
+	  public ResponseEntity<List<Notification>> getMyUnreadNotifications(Authentication authentication) {
+	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	      long userId = userDetails.getUserId();
+	      return ResponseEntity.ok(notificationService.findUnreadById(userId));
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -51,8 +59,10 @@ public class NotificationController {
 	
 	// 알림 읽음 처리
 	@PatchMapping("/read")
-	public ResponseEntity<Void> markReadAll() {
-		notificationService.markAllRead();
+	public ResponseEntity<Void> markReadAll(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		notificationService.markAllRead(userId);
 		return ResponseEntity.ok().build();
 	}
 

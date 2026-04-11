@@ -95,7 +95,7 @@ public class UploadFileController {
 			notificationService.insert(
 //					userDetails.getUserId(),
 					1,
-					"PENDING", 
+					"FILE UPLOAD", 
 					"CSV파일이 업로드 되었습니다.",
 					uploadFileService.getLastFileId());
 			

@@ -22,10 +22,16 @@ public class NotificationService implements INotificationService {
 	public List<Notification> findAllById(long userId){
 		return notificationRepository.findAllById(userId);
 	}
+	
+	@Override
+	  public List<Notification> findUnreadById(long userId) {
+	      return notificationRepository.findUnreadById(userId);
+	}
+	
 
 	@Override
-	public void markAllRead() {
-		notificationRepository.markAllRead();;
+	public void markAllRead(long userId) {
+		notificationRepository.markAllRead(userId);
 
 	}
 

@@ -12,9 +12,9 @@ import com.metanet.myddareungi.domain.notification.model.Notification;
 public interface INotificationRepository { 
     List<Notification> findAll();
     List<Notification> findAllById(long userId);
+    List<Notification> findUnreadById(@Param("userId") long userId);
     
-    
-    void markAllRead();
+    void markAllRead(@Param("userId") long userId);
     void markAsRead(long notificationId);
     void deleteById(long notificationId);
     
