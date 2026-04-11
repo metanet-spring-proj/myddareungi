@@ -10,9 +10,36 @@
             <a th:href="@{''(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">ENG</a>
         </div>
         
-        <button class="icon-btn">
-            <i class="fa-regular fa-bell"></i>
-        </button>
+		<button class="icon-btn" id="notificationTrigger" aria-expanded="false">
+				    <i class="fa-regular fa-bell" id="bell-icon"></i>
+				    <span class="notification-dot" id="notificationDot"></span>
+				</button>
+				<div
+			        class="notification-popover"
+			        id="notificationPopover"
+			        role="dialog"
+			        aria-label="알림 팝업"
+			        hidden
+			      >
+			      <div class="notification-header">
+			          <div class="notification-title-box">
+			            <span class="notification-title">알림</span>
+			            <span class="notification-count" id="notificationCount">3</span>
+			          </div>
+			          <button type="button" class="mark-all-read-btn" id="markAllReadBtn">
+			            전체 읽음
+			          </button>
+			        </div>
+
+			        <div class="notification-list" id="notificationList">
+			          <!-- JS로 렌더링 -->
+			            </div>
+
+			        <button type="button" class="notification-footer-btn" id="viewAllBtn">
+			          전체 보기
+			        </button>
+				</div>
+		
         <div class="profile-thumb">
             <i class="fa-solid fa-user"></i>
         </div>
