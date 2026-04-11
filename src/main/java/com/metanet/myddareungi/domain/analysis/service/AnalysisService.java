@@ -24,11 +24,10 @@ public class AnalysisService implements IAnalysisService {
         int pageSize = 12;
         int page = request.getPage() == null ? 1 : request.getPage();
 
-        int startRow = (page - 1) * pageSize + 1;
-        int endRow = page * pageSize;
-
-        request.setStartRow(startRow);
-        request.setEndRow(endRow);
+        int offset = (page - 1) * pageSize;
+        
+        request.setOffset(offset);
+        request.setPageSize(pageSize);
 
         List<AnalysisResult> results = analysisRepository.searchAnalysis(request);
         int totalElements = analysisRepository.countSearchAnalysis(request);
