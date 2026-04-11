@@ -55,6 +55,7 @@ public class SecurityConfig {
 								"/api/v1/auth/password/reset")
 						.permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/v1/users/signup").permitAll()
+						.requestMatchers("/admin/**").hasRole("ADMIN")
 						.requestMatchers("/css/**").permitAll()
 						.anyRequest().authenticated())
 				.formLogin(form -> form
