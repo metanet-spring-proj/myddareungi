@@ -6,6 +6,7 @@
     <title>마이 페이지 - 관리자</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/mypage/user-mypage.css}">
     <!-- CSRF Meta Tags -->
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
@@ -39,13 +40,15 @@
             <div class="card profile-card">
                 <div class="profile-header">
                     <div class="profile-info-wrap">
-                        <div class="profile-avatar">👨💼</div>
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
                         <div>
                             <div class="profile-name" th:text="${adminName}">김서울 관리자</div>
                             <span class="role-badge" th:text="#{profile.role}">최고 관리자</span>
                         </div>
                     </div>
-                    <button class="edit-btn">✎</button>
+                    <a th:href="@{/users/update}" class="edit-profile-btn" th:text="#{profile.edit}">정보 수정</a>
                 </div>
 
                 <div class="divider"></div>
@@ -72,7 +75,7 @@
                     </div>
                 </div>
 
-                <!-- 테이블 -->
+                <!-- 데이터 검토 테이블 -->
                 <div class="card table-card">
                     <div class="table-header">
                         <h3 th:text="#{table.title}">데이터 검토 대기열</h3>
@@ -125,10 +128,10 @@
                                 </div>
                             </td>
                             <td>
-                                <!-- 다운로드 버튼 전용 컬럼 -->
+                                <!-- 다운로드 버튼 -->
                                 <a th:href="@{/api/files/{fileId}/downloads(fileId=${file.fileId})}" 
-                                   class="review-btn download-btn" 
-                                   th:title="#{action.download}">
+                                    class="review-btn download-btn" 
+                                    th:title="#{action.download}">
                                     <i class="fas fa-download"></i>
                                 </a>
                             </td>
@@ -158,7 +161,6 @@
             if (!confirm(confirmMsg)) return;
 
             try {
-                // CSRF 토큰 획득 (쿠키 우선)
                 function getCookie(name) {
                     let value = "; " + document.cookie;
                     let parts = value.split("; " + name + "=");

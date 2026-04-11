@@ -51,7 +51,8 @@ async function loadKpi() {
     document.getElementById("totalCarbonSaved").textContent = formatKpi(data.totalCarbonSaved);
     document.getElementById("totalStationCnt").textContent = formatKpi(data.totalStationCnt);
     document.getElementById("avgUseTime").textContent = formatDecimal(data.avgUseTime);
-    document.getElementById("topDistrict").textContent = data.topDistrict ?? "-";
+    const topDist = data.topDistrict ?? "-";
+    document.getElementById("topDistrict").textContent = window.I18N?.district?.[topDist] || topDist;
 }
 
 async function loadMonthlyChart() {
@@ -68,12 +69,12 @@ async function loadMonthlyChart() {
             labels: data.monthList,
             datasets: [
                 {
-                    label: "이용건수",
+                    label: window.I18N?.useCount || "이용건수",
                     data: data.useCountList,
                     yAxisID: "y"
                 },
                 {
-                    label: "대여소 수",
+                    label: window.I18N?.stationCount || "대여소 수",
                     data: data.stationCountList,
                     type: "line",
                     yAxisID: "y1"
@@ -115,10 +116,10 @@ async function loadWeekdayChart() {
     weekdayChart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: data.weekdayList,
+            labels: data.weekdayList.map(w => window.I18N?.weekday?.[w] || w),
             datasets: [
                 {
-                    label: "이용건수",
+                    label: window.I18N?.useCount || "이용건수",
                     data: data.useCountList
                 }
             ]
@@ -146,10 +147,10 @@ async function loadAgeGroupChart() {
     ageGroupChart = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: data.ageGroupList,
+            labels: data.ageGroupList.map(a => window.I18N?.age?.[a] || a),
             datasets: [
                 {
-                    label: "이용건수",
+                    label: window.I18N?.useCount || "이용건수",
                     data: data.useCountList
                 }
             ]
@@ -211,9 +212,11 @@ async function loadDistrictMap() {
         onEachFeature: function(feature, layer) {
             const districtName = getDistrictName(feature);
             const value = districtUsageMap[districtName] ?? 0;
+            const tDistrict = window.I18N?.district?.[districtName] || districtName;
+            const tUseCount = window.I18N?.useCount || "이용건수";
 
             layer.bindTooltip(
-                `<strong>${districtName}</strong><br>이용건수: ${formatNumber(value)}건`,
+                `<strong>${tDistrict}</strong><br>${tUseCount}: ${formatNumber(value)}`,
                 { sticky: true }
             );
 
@@ -240,9 +243,10 @@ async function loadDistrictMap() {
         .sort((a, b) => b[1] - a[1]);
 
     const rankEl = document.getElementById("districtRank");
-    rankEl.innerHTML = rankData.map(([name, count], i) =>
-        `<li><span>${i + 1}. ${name}</span><span class="rank-count">${formatNumber(count)}건</span></li>`
-    ).join("");
+    rankEl.innerHTML = rankData.map(([name, count], i) => {
+        const tName = window.I18N?.district?.[name] || name;
+        return `<li><span>${i + 1}. ${tName}</span><span class="rank-count">${formatNumber(count)}</span></li>`;
+    }).join("");
 
     setTimeout(() => {
         districtMap.invalidateSize();
@@ -260,10 +264,10 @@ async function loadRentTypeChart() {
     rentTypeChart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: data.rentTypeList,
+            labels: data.rentTypeList.map(r => window.I18N?.rent?.[r] || r),
             datasets: [
                 {
-                    label: "이용건수",
+                    label: window.I18N?.useCount || "이용건수",
                     data: data.useCountList
                 }
             ]

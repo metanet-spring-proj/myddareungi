@@ -6,28 +6,21 @@
 <mapper namespace="com.metanet.myddareungi.domain.analysis.repository.AnalysisRepository">
 
     <select id="searchAnalysis" resultType="AnalysisResult">
-        SELECT *
-        FROM (
-            SELECT ROWNUM AS rnum, a.*
-            FROM (
-                SELECT station_name, district, month, age_group, total_use_cnt
-                FROM bike_usage_stats
-                <where>
-                    <if test="month != null and month != ''"> AND MONTH = #{month} </if>
-                    <if test="district != null and district.size() > 0">
-                        AND district IN 
-                        <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
-                    </if>
-                    <if test="ageGroup != null and ageGroup.size() > 0">
-                        AND age_group IN 
-                        <foreach item="a" collection="ageGroup" open="(" separator="," close=")">#{a}</foreach>
-                    </if>
-                </where>
-                ORDER BY total_use_cnt DESC
-            ) a
-            WHERE ROWNUM &lt;= #{endRow}
-        )
-        WHERE rnum &gt;= #{startRow}
+        SELECT station_name, district, month, age_group, total_use_cnt
+        FROM bike_usage_stats
+        <where>
+            <if test="month != null and month != ''"> AND MONTH = #{month} </if>
+            <if test="district != null and district.size() > 0">
+                AND district IN 
+                <foreach item="d" collection="district" open="(" separator="," close=")">#{d}</foreach>
+            </if>
+            <if test="ageGroup != null and ageGroup.size() > 0">
+                AND age_group IN 
+                <foreach item="a" collection="ageGroup" open="(" separator="," close=")">#{a}</foreach>
+            </if>
+        </where>
+        ORDER BY total_use_cnt DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
 
     <select id="listAllAnalysis" resultType="AnalysisResult">

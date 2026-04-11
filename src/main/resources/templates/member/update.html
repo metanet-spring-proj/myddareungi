@@ -112,8 +112,19 @@
 			const successBox = document.getElementById('update-success');
 			const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
 			const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
-			const csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
-			const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-CSRF-TOKEN';
+			let csrfToken = csrfTokenMeta ? csrfTokenMeta.content : '';
+			const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.content : 'X-XSRF-TOKEN';
+
+			const getCookie = (name) => {
+				const value = "; " + document.cookie;
+				const parts = value.split("; " + name + "=");
+				if (parts.length === 2) return parts.pop().split(";").shift();
+				return null;
+			};
+			
+			if (!csrfToken) {
+				csrfToken = getCookie('XSRF-TOKEN') || '';
+			}
 
 			const userId = /*[[${member?.userId}]]*/ null;
 
@@ -152,7 +163,13 @@
 
 				try {
 					const headers = { 'Content-Type': 'application/json' };
-					if (csrfToken) headers[csrfHeader] = csrfToken;
+					const currentCsrf = getCookie('XSRF-TOKEN') || csrfToken;
+					if (currentCsrf) {
+					    headers['X-XSRF-TOKEN'] = currentCsrf;
+					    if (csrfHeader && csrfHeader !== 'X-XSRF-TOKEN') {
+					        headers[csrfHeader] = currentCsrf;
+					    }
+					}
 
 					const response = await fetch(`/api/v1/users/${userId}`, {
 						method: 'PUT',

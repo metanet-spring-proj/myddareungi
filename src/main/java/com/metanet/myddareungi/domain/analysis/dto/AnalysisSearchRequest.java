@@ -27,8 +27,8 @@ public class AnalysisSearchRequest {
 
     // mapper 전달용
     @Schema(hidden = true)
-    private Integer startRow;
+    private Integer offset;
     @Schema(hidden = true)
-    private Integer endRow;
+    private Integer pageSize;
 
 }

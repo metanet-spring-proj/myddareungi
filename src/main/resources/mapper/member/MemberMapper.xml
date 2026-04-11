@@ -101,9 +101,6 @@
             <if test="email != null and email != ''">
                 EMAIL = #{email},
             </if>
-            <if test="password != null and password != ''">
-                PASSWORD = #{password},
-            </if>
             UPDATED_AT = SYSDATE
         </set>
         WHERE USER_ID = #{userId}

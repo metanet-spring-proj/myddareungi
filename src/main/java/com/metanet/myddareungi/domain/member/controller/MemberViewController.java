@@ -41,7 +41,7 @@ public class MemberViewController {
 	}
 
 
-	@GetMapping("/member/update")
+	@GetMapping("/users/update")
 	public String updatePage(Authentication authentication, Model model) {
 		if (!isAuthenticated(authentication)) {
 			return "redirect:/login";
