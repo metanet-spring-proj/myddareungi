@@ -10,6 +10,8 @@ import com.metanet.myddareungi.domain.notification.model.Notification;
 @Mapper
 public interface INotificationRepository { 
     List<Notification> findAll();
+    List<Notification> findAllbyId(long userId);
+    
     
     void markAllRead();
     void markAsRead(long notificationId);

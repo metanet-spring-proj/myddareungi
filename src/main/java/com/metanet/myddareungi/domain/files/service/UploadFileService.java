@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.repository.IUploadFileRepository;
+import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
 @Service
 @Transactional
@@ -16,6 +17,9 @@ public class UploadFileService implements IUploadFileService {
 	@Autowired
 	IUploadFileRepository uploadFileRepository;
 
+	@Autowired
+	INotificationService notificationService;
+	
 	@Override
 	public void uploadFile(UploadFile file) {
 		System.out.println("서비스 업로드");
@@ -49,6 +53,12 @@ public class UploadFileService implements IUploadFileService {
 	    
 	    file.setStatus(status);
 	    file.setReviewedBy(reviewedBy);
+	    
+	    notificationService.insert(
+				file.getUploaderId(),
+				status, 
+				"파일이 [" + status + "] 처리 되었습니다.",
+				file.getFileId());
 	    
 	    uploadFileRepository.reviewFile(file);
 	}

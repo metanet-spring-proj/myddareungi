@@ -3,6 +3,7 @@ package com.metanet.myddareungi.domain.notification.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.metanet.myddareungi.config.CustomUserDetails;
 import com.metanet.myddareungi.domain.notification.model.Notification;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
@@ -27,6 +29,15 @@ public class NotificationController {
 	@GetMapping
 	public ResponseEntity<List<Notification>> getNotifications() {
 		List<Notification> notifications = notificationService.findAll();
+		return ResponseEntity.ok(notifications);
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		
+		List<Notification> notifications = notificationService.findAllbyId(userId);
 		return ResponseEntity.ok(notifications);
 	}
 	

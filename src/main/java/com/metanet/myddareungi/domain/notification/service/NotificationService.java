@@ -17,6 +17,11 @@ public class NotificationService implements INotificationService {
 	public List<Notification> findAll() {
 		return notificationRepository.findAll();
 	}
+	
+	@Override
+	public List<Notification> findAllbyId(long userId){
+		return notificationRepository.findAllbyId(userId);
+	}
 
 	@Override
 	public void markAllRead() {

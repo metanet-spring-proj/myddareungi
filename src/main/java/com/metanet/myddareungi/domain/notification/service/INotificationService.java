@@ -6,6 +6,7 @@ import com.metanet.myddareungi.domain.notification.model.Notification;
 
 public interface INotificationService {
     List<Notification> findAll();
+    List<Notification> findAllbyId(long userId);
     
     void markAllRead();
     void markAsRead(long notificationId);

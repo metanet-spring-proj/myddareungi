@@ -91,8 +91,10 @@ public class UploadFileController {
 			System.out.println("파일 DB 저장 시작: " + originalFileName);
 			uploadFileService.uploadFile(uploadFile);
 
+			//알림 생성
 			notificationService.insert(
-					userDetails.getUserId(), 
+//					userDetails.getUserId(),
+					1,
 					"PENDING", 
 					"CSV파일이 업로드 되었습니다.",
 					uploadFileService.getLastFileId());
