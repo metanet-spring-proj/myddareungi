@@ -7,8 +7,10 @@ import com.metanet.myddareungi.domain.member.model.Member;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class MemberResponseDto {
 
