@@ -28,6 +28,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    VALUES (#{userId}, #{notificationType}, #{message}, #{fileId}, CURRENT_TIMESTAMP)
 	</insert>
 	
+	<!-- 알림 수정 -->
+	<update id="setStatus">
+		UPDATE NOTIFICATION SET NOTIFICATION_TYPE = #{status} WHERE NOTIFICATION_ID = #{notificationId}
+	</update>
+	
+	<!--파일아이디로 알림찾기-->
+	<select id="findByFileId" parameterType="long"
+	          resultType="com.metanet.myddareungi.domain.notification.model.Notification">
+	      SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT
+	      FROM NOTIFICATION
+	      WHERE FILE_ID = #{fileId}
+	  </select>
 	
 	
 </mapper>

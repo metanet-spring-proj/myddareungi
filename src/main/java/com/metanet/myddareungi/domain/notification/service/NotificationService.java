@@ -51,4 +51,10 @@ public class NotificationService implements INotificationService {
 
 	}
 
+	@Override
+	  public void setStatus(long fileId, String status) {
+	      Notification notification = notificationRepository.findByFileId(fileId);
+	      notificationRepository.setStatus(status, notification.getNotificationId());
+	  }
+
 }

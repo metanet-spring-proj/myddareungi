@@ -60,6 +60,7 @@ public class UploadFileService implements IUploadFileService {
 				"파일이 [" + status + "] 처리 되었습니다.",
 				file.getFileId());
 	    
+	    notificationService.setStatus(fileId, status);
 	    uploadFileRepository.reviewFile(file);
 	}
 

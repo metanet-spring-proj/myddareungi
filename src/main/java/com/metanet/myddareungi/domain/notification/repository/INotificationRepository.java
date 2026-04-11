@@ -4,6 +4,7 @@ package com.metanet.myddareungi.domain.notification.repository;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.metanet.myddareungi.domain.notification.model.Notification;
 
@@ -20,4 +21,8 @@ public interface INotificationRepository {
     void insert(Notification notification);
     
     
+    Notification findByFileId(long fileId);
+    
+    void setStatus(@Param("status") String status,
+    		@Param("notificationId") long notificationId);
 }
