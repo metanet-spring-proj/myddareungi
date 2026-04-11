@@ -1,6 +1,5 @@
 package com.metanet.myddareungi.domain.admin.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import java.security.Principal;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
-// @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final IAdminService adminService;

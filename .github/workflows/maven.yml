@@ -24,7 +24,8 @@ jobs:
         run: chmod +x mvnw
 
       - name: Build and Test with Maven
-        run: ./mvnw test
+        # DB 연결이 필요한 MyddareungiApplicationTests를 제외하고 테스트를 실행합니다.
+        run: ./mvnw test -Dtest="!MyddareungiApplicationTests"
 
       - name: Upload Test Report
         if: failure()
