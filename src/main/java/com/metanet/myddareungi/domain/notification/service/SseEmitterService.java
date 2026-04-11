@@ -8,6 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import jakarta.annotation.PreDestroy;
+
 @Service
 public class SseEmitterService {
 	private final Map<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
