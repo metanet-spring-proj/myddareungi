@@ -23,17 +23,13 @@ public class AdminController {
     private final IAdminService adminService;
     private final MemberAuthService memberAuthService;
 
-
     @GetMapping("/mypage")
     public String adminMyPage(Model model, Principal principal) {
-        // [JWT 연동]
-        // Authentication(Principal)에서 로그인 ID를 추출하여 실제 회원 정보를 조회합니다.
         String loginId = principal.getName();
         Member member = memberAuthService.getMember(loginId);
         long userId = member.getUserId();
 
         AdminDashboardDto dashboardData = adminService.getDashboardData(userId);
-
 
         model.addAttribute("adminId", dashboardData.getAdminId());
         model.addAttribute("adminName", dashboardData.getAdminName());
