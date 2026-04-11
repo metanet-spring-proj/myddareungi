@@ -30,7 +30,8 @@
   const notificationDot = document.getElementById("notificationDot");
   const markAllReadBtn = document.getElementById("markAllReadBtn");
   const viewAllBtn = document.getElementById("viewAllBtn");
-
+  const bellIcon = document.getElementById("bell-icon");
+  
   function getCookie(name) {
           let value = "; " + document.cookie;
           let parts = value.split("; " + name + "=");
@@ -108,16 +109,16 @@
 	  }
 	
 	
-  function openPopover() {
-    notificationPopover.hidden = false;
-    notificationTrigger.setAttribute("aria-expanded", "true");
-	loadNotifications();
-  }
+	function openPopover() {
+	  notificationPopover.hidden = false;
+	  notificationTrigger.setAttribute("aria-expanded", "true");
+	  loadNotifications();
+	}
 
-  function closePopover() {
-    notificationPopover.hidden = true;
-    notificationTrigger.setAttribute("aria-expanded", "false");
-  }
+	function closePopover() {
+	    notificationPopover.hidden = true;
+	    notificationTrigger.setAttribute("aria-expanded", "false");
+	}
 
   function togglePopover() {
     const isHidden = notificationPopover.hidden;
@@ -147,8 +148,8 @@
     }
   });
 
-  notificationList.addEventListener("click", function (e) {
-	const item = e.target.closest(".notification-item");
+	notificationList.addEventListener("click", function (e) {
+		const item = e.target.closest(".notification-item");
 	      if (!item) return;
 
 	      const id = Number(item.dataset.id);
@@ -158,7 +159,7 @@
 	      }).then(() => loadNotifications());
 	  });
 
-  markAllReadBtn.addEventListener("click", function () {
+	markAllReadBtn.addEventListener("click", function () {
         fetch('/api/v1/notifications/read', {
             method: 'PATCH',
             headers: { [getCsrfHeader()]: getCsrfToken()}
@@ -172,8 +173,24 @@
 	  });
 	  
   // 페이지 로드 시 읽지 않은 알림 dot 표시
-    fetch('/api/v1/notifications')
-        .then(res => res.json())
-        .then(data => updateUnreadUI(data.length));
+	fetch('/api/v1/notifications/unread')
+	    .then(res => res.json())
+	    .then(data => updateUnreadUI(data.length));
 		
+	// SSE 연결                                                                                                                        
+	const eventSource = new EventSource('/api/v1/notifications/subscribe');
+	eventSource.addEventListener('notification', function(e) {
+    	const unreadCount = parseInt(notificationCount.textContent) || 0;
+    	notificationCount.textContent = unreadCount + 1;
+    	notificationDot.classList.add("show");
 
+      // 벨 shake
+    	bellIcon.classList.add("fa-shake");
+    	setTimeout(() => bellIcon.classList.remove("fa-shake"), 3000);
+	});
+
+  	eventSource.addEventListener('error', function(e) {
+    	if (eventSource.readyState === EventSource.CLOSED) {
+      		console.log('SSE 연결 종료');
+      	}
+  	});

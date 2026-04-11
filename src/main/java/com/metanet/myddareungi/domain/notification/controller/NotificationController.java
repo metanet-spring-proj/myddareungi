@@ -2,6 +2,7 @@ package com.metanet.myddareungi.domain.notification.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.metanet.myddareungi.config.CustomUserDetails;
 import com.metanet.myddareungi.domain.notification.model.Notification;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
+import com.metanet.myddareungi.domain.notification.service.SseEmitterService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationController {
 	private final INotificationService notificationService;
-
+	private final SseEmitterService sseEmitterService;
 	
 	// 알림 목록 조회
 	@GetMapping("/all")
@@ -75,5 +78,17 @@ public class NotificationController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	  public SseEmitter subscribe(Authentication authentication) {
+	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	      long userId = userDetails.getUserId();
+	      SseEmitter emitter = sseEmitterService.addEmitter(userId);
+	      try {
+	          emitter.send(SseEmitter.event().name("connect").data("connected"));
+	      } catch (Exception e) {
+	          sseEmitterService.removeEmitter(userId, emitter);
+	      }
+	      return emitter;
+	  }
 	
 }

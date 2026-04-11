@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import com.metanet.myddareungi.domain.notification.model.Notification;
 import com.metanet.myddareungi.domain.notification.repository.INotificationRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class NotificationService implements INotificationService {
-	@Autowired
-	INotificationRepository notificationRepository;
+	private final INotificationRepository notificationRepository;
+	private final SseEmitterService sseEmitterService;
 	
 	@Override
 	public List<Notification> findAll() {
@@ -54,7 +57,9 @@ public class NotificationService implements INotificationService {
 		notification.setMessage(message);
 		notification.setFileId(fileId);
 		notificationRepository.insert(notification);
-
+		
+		// SSE 실시간 전송
+	    sseEmitterService.sendToUser(userId, notification);
 	}
 
 	@Override
