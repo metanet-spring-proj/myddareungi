@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>따릉이 대시보드</title>
+    <title th:text="#{dashboard.title}">따릉이 대시보드</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard/dashboard.css}">
@@ -11,6 +11,69 @@
     <script defer th:src="@{/js/dashboard/dashboard.js}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script th:inline="javascript">
+        window.I18N = {
+            useCount: /*[[#{table.header.usecount}]]*/ '이용건수',
+            stationCount: /*[[#{dashboard.kpi.totalStationCnt}]]*/ '대여소 수',
+            age: {
+                "~10대": /*[[#{age.~10대}]]*/ '~10대',
+                "20대": /*[[#{age.20대}]]*/ '20대',
+                "30대": /*[[#{age.30대}]]*/ '30대',
+                "40대": /*[[#{age.40대}]]*/ '40대',
+                "50대": /*[[#{age.50대}]]*/ '50대',
+                "60대": /*[[#{age.60대}]]*/ '60대',
+                "70대~": /*[[#{age.70대~}]]*/ '70대~',
+                "기타": /*[[#{age.기타}]]*/ '기타'
+            },
+            district: {
+                "강남구": /*[[#{district.강남구}]]*/ '강남구',
+                "강동구": /*[[#{district.강동구}]]*/ '강동구',
+                "강북구": /*[[#{district.강북구}]]*/ '강북구',
+                "강서구": /*[[#{district.강서구}]]*/ '강서구',
+                "관악구": /*[[#{district.관악구}]]*/ '관악구',
+                "광진구": /*[[#{district.광진구}]]*/ '광진구',
+                "구로구": /*[[#{district.구로구}]]*/ '구로구',
+                "금천구": /*[[#{district.금천구}]]*/ '금천구',
+                "노원구": /*[[#{district.노원구}]]*/ '노원구',
+                "도봉구": /*[[#{district.도봉구}]]*/ '도봉구',
+                "동대문구": /*[[#{district.동대문구}]]*/ '동대문구',
+                "동작구": /*[[#{district.동작구}]]*/ '동작구',
+                "마포구": /*[[#{district.마포구}]]*/ '마포구',
+                "서대문구": /*[[#{district.서대문구}]]*/ '서대문구',
+                "서초구": /*[[#{district.서초구}]]*/ '서초구',
+                "성동구": /*[[#{district.성동구}]]*/ '성동구',
+                "성북구": /*[[#{district.성북구}]]*/ '성북구',
+                "송파구": /*[[#{district.송파구}]]*/ '송파구',
+                "양천구": /*[[#{district.양천구}]]*/ '양천구',
+                "영등포구": /*[[#{district.영등포구}]]*/ '영등포구',
+                "용산구": /*[[#{district.용산구}]]*/ '용산구',
+                "은평구": /*[[#{district.은평구}]]*/ '은평구',
+                "종로구": /*[[#{district.종로구}]]*/ '종로구',
+                "중구": /*[[#{district.중구}]]*/ '중구',
+                "중랑구": /*[[#{district.중랑구}]]*/ '중랑구'
+            },
+            weekday: {
+                "월": /*[[#{day.mon}]]*/ '월',
+                "화": /*[[#{day.tue}]]*/ '화',
+                "수": /*[[#{day.wed}]]*/ '수',
+                "목": /*[[#{day.thu}]]*/ '목',
+                "금": /*[[#{day.fri}]]*/ '금',
+                "토": /*[[#{day.sat}]]*/ '토',
+                "일": /*[[#{day.sun}]]*/ '일'
+            },
+            rent: {
+                "정기권": /*[[#{rent.regular}]]*/ '정기권',
+                "일일권": /*[[#{rent.daily}]]*/ '일일권',
+                "일일권(비회원)": /*[[#{rent.guest}]]*/ '일일권(비회원)',
+                "가족권": /*[[#{rent.family}]]*/ '가족권',
+                "가족권(2시간)": /*[[#{rent.family2}]]*/ '가족권(2시간)',
+                "가족권(3시간)": /*[[#{rent.family3}]]*/ '가족권(3시간)',
+                "일일권(3시간)": /*[[#{rent.daily3}]]*/ '일일권(3시간)',
+                "일일권(비회원 3시간)": /*[[#{rent.guest3}]]*/ '일일권(비회원 3시간)',
+                "단체권": /*[[#{rent.group}]]*/ '단체권'
+            }
+        };
+    </script>
 </head>
 <body>
 <div class="layout">
@@ -26,57 +89,57 @@
             <!-- 기존 대시보드 내용 그대로 유지 -->
             <div class="dashboard-header">
                 <div>
-                    <h1>서울시 공공자전거 이용 분석 현황</h1>
-                    <p class="data-date">데이터 기준: 2026년 01월 01일</p>
+                    <h1 th:text="#{dashboard.header.title}">서울시 공공자전거 이용 분석 현황</h1>
+                    <p class="data-date" th:text="#{dashboard.header.date}">데이터 기준: 2026년 01월 01일</p>
                 </div>
-                <button class="download-btn" onclick="downloadDashboard()">⬇ 리포트 다운로드</button>
+                <button class="download-btn" onclick="downloadDashboard()" th:text="#{dashboard.header.download}">⬇ 리포트 다운로드</button>
             </div>
 
             <section class="kpi-grid">
                 <!-- ... 생략 (기존 KPI 카드들) ... -->
                 <div class="kpi-card">
                     <div class="kpi-top">
-                        <span class="kpi-title">총 누적 이용건수</span>
+                        <span class="kpi-title" th:text="#{dashboard.kpi.totalUseCnt}">총 누적 이용건수</span>
                         <span class="kpi-icon">🚲</span>
                     </div>
                     <div class="kpi-value-row">
                         <span class="kpi-value" id="totalUseCnt">-</span>
-                        <span class="kpi-unit">건</span>
+                        <span class="kpi-unit" th:text="#{dashboard.kpi.unit.count}">건</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-top">
-                        <span class="kpi-title">총 누적 탄소절감량</span>
+                        <span class="kpi-title" th:text="#{dashboard.kpi.totalCarbonSaved}">총 누적 탄소절감량</span>
                         <span class="kpi-icon">🌿</span>
                     </div>
                     <div class="kpi-value-row">
                         <span class="kpi-value" id="totalCarbonSaved">-</span>
-                        <span class="kpi-unit">톤</span>
+                        <span class="kpi-unit" th:text="#{dashboard.kpi.unit.ton}">톤</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-top">
-                        <span class="kpi-title">총 대여소 수</span>
+                        <span class="kpi-title" th:text="#{dashboard.kpi.totalStationCnt}">총 대여소 수</span>
                         <span class="kpi-icon">📍</span>
                     </div>
                     <div class="kpi-value-row">
                         <span class="kpi-value" id="totalStationCnt">-</span>
-                        <span class="kpi-unit">개</span>
+                        <span class="kpi-unit" th:text="#{dashboard.kpi.unit.ea}">개</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-top">
-                        <span class="kpi-title">평균 이용시간</span>
+                        <span class="kpi-title" th:text="#{dashboard.kpi.avgUseTime}">평균 이용시간</span>
                         <span class="kpi-icon">⏱</span>
                     </div>
                     <div class="kpi-value-row">
                         <span class="kpi-value" id="avgUseTime">-</span>
-                        <span class="kpi-unit">분</span>
+                        <span class="kpi-unit" th:text="#{dashboard.kpi.unit.min}">분</span>
                     </div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-top">
-                        <span class="kpi-title">최다 이용 자치구</span>
+                        <span class="kpi-title" th:text="#{dashboard.kpi.topDistrict}">최다 이용 자치구</span>
                         <span class="kpi-icon">🏆</span>
                     </div>
                     <div class="kpi-value kpi-value--sm" id="topDistrict">-</div>
@@ -85,13 +148,13 @@
 
             <section class="chart-row">
                 <div class="chart-card chart-card--lg">
-                    <div class="chart-title">월별 대여소 증설 및 이용건수 추이</div>
+                    <div class="chart-title" th:text="#{dashboard.chart.monthly}">월별 대여소 증설 및 이용건수 추이</div>
                     <div class="chart-box">
                         <canvas id="monthlyChart"></canvas>
                     </div>
                 </div>
                 <div class="chart-card chart-card--md">
-                    <div class="chart-title">자치구별 이용 밀도 히트맵</div>
+                    <div class="chart-title" th:text="#{dashboard.chart.map}">자치구별 이용 밀도 히트맵</div>
                     <div class="map-box">
                         <div id="districtMap"></div>
                     </div>
@@ -101,19 +164,19 @@
 
             <section class="chart-row">
                 <div class="chart-card chart-card--weekday">
-                    <div class="chart-title">요일별 이용 패턴</div>
+                    <div class="chart-title" th:text="#{dashboard.chart.weekday}">요일별 이용 패턴</div>
                     <div class="chart-box">
                         <canvas id="weekdayChart"></canvas>
                     </div>
                 </div>
                 <div class="chart-card chart-card--age">
-                    <div class="chart-title">사용자 분포 (연령)</div>
+                    <div class="chart-title" th:text="#{dashboard.chart.age}">사용자 분포 (연령)</div>
                     <div class="chart-box">
                         <canvas id="ageGroupChart"></canvas>
                     </div>
                 </div>
                 <div class="chart-card chart-card--rent">
-                    <div class="chart-title">권종별 이용 현황</div>
+                    <div class="chart-title" th:text="#{dashboard.chart.rent}">권종별 이용 현황</div>
                     <div class="chart-box">
                         <canvas id="rentTypeChart"></canvas>
                     </div>

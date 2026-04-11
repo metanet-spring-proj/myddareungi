@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorNetwork  : mainContent.dataset.errorNetwork,
         errorFileType : mainContent.dataset.errorFileType,
         errorFileSize : mainContent.dataset.errorFileSize,
+        uploading     : mainContent.dataset.uploading || '업로드 중...',
     };
 
     // ── CSRF 토큰 (메타 태그 + 쿠키 기반) ──────────────────────────
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.lengthComputable) {
                 const pct = Math.round((e.loaded / e.total) * 100);
                 progressFill.style.width = pct + '%';
-                progressText.textContent = `업로드 중... ${pct}%`;
+                progressText.textContent = `${MSG.uploading} ${pct}%`;
             }
         });
 
