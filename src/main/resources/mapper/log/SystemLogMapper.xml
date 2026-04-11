@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "../mybatis-3-mapper.dtd">
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "../mybatis-3-mapper.dtd">
 
 <mapper namespace="com.metanet.myddareungi.common.log.repository.SystemLogRepository">
 
-    <insert id="insertLog" parameterType="com.metanet.myddareungi.common.log.model.SystemLog">
-        INSERT INTO SYSTEM_LOG (
-        USER_ID,
-        METHOD_NAME,
-        ARGUMENTS,
-        ERROR_MESSAGE,
-        EXECUTION_TIME
-        ) VALUES (
-        #{userId,        jdbcType=NUMERIC},
-        #{methodName,    jdbcType=VARCHAR},
-        #{arguments,     jdbcType=VARCHAR},
-        #{errorMessage,  jdbcType=VARCHAR},
-        #{executionTime, jdbcType=NUMERIC}
-        )
-    </insert>
-    <delete id="deleteOldLogs"> DELETE FROM SYSTEM_LOG WHERE CREATED_AT &lt; SYSTIMESTAMP - INTERVAL
-        '30' DAY </delete>
+<insert id="insertLog" parameterType="com.metanet.myddareungi.common.log.model.SystemLog">
+    INSERT INTO SYSTEM_LOG ( USER_ID, METHOD_NAME, ARGUMENTS, ERROR_MESSAGE, EXECUTION_TIME )
+    VALUES ( #{userId, jdbcType=NUMERIC}, #{methodName, jdbcType=VARCHAR}, #{arguments,
+        jdbcType=VARCHAR}, #{errorMessage, jdbcType=VARCHAR}, #{executionTime, jdbcType=NUMERIC} ) </insert>
+
+<delete id="deleteOldLogs">
+    DELETE FROM SYSTEM_LOG
+    WHERE CREATED_AT &lt; SYSTIMESTAMP
+    <if test="days > 0">
+        - NUMTODSINTERVAL(#{days}, 'DAY')
+    </if>
+    <if test="days == 0">
+        - NUMTODSINTERVAL(#{minutes}, 'MINUTE')
+    </if>
+</delete>
 
 </mapper>
