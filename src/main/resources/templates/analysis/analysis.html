@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
     <link rel="stylesheet" th:href="@{/css/analysis/analysis.css}">
+    <!-- Virtual Select CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/virtual-select-plugin@1.0.39/dist/virtual-select.min.css">
+    <script th:inline="javascript">
+        window.I18N = {
+            districtPlaceholder: [[#{filter.district.label}]],
+            noOptionsText: [[#{result.empty}]],
+            selectAllText: [[#{filter.selectAll}]],
+            searchPlaceholder: [[#{header.search.placeholder}]]
+        };
+    </script>
 </head>
 <body>
 <div class="layout">
@@ -30,12 +40,11 @@
                         <option value="" th:text="#{filter.month.all}">전체 월</option>
                         <option th:each="m : ${#numbers.sequence(1, 12)}" 
                                 th:value="${m}" 
-                                th:text="${m} + #{filter.month.suffix}"
+                                th:text="#{ 'month.' + ${m} }"
                                 th:selected="${request.month == m}"></option>
                     </select>
 
-                    <select name="district" class="filter-select" multiple size="1" style="min-width: 150px;">
-                        <option value="" disabled th:text="#{filter.district.label}">자치구(중복선택)</option>
+                    <select name="district" id="districtSelect" multiple>
                         <th:block th:each="d : ${ {'강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'} }">
                             <option th:value="${d}" th:text="#{ 'district.' + ${d} }" 
                                     th:selected="${request.district != null && request.district.contains(d)}"></option>
@@ -46,15 +55,17 @@
                         <th:block th:each="age : ${ {'~10대', '20대', '30대', '40대', '50대', '60대', '기타'} }">
                             <label class="age-label">
                                 <input type="checkbox" name="ageGroup" th:value="${age}" 
-                                       th:checked="${request.ageGroup != null && request.ageGroup.contains(age)}" 
-                                       style="display:none;">
+                                        th:checked="${request.ageGroup != null && request.ageGroup.contains(age)}" 
+                                        style="display:none;">
                                 <span class="age-badge" th:text="#{ 'age.' + ${age} }"></span>
                             </label>
                         </th:block>
                     </div>
 
-                    <button type="submit" class="btn-apply" th:text="#{filter.apply}">적용</button>
-                    <a th:href="@{/analysis/search}" class="btn-reset" th:text="#{filter.reset}">필터 초기화</a>
+                    <div class="filter-group-actions">
+                        <button type="submit" class="btn-apply" th:text="#{filter.apply}">적용</button>
+                        <a th:href="@{/analysis/search}" class="btn-reset" th:text="#{filter.reset}">필터 초기화</a>
+                    </div>
                 </div>
             </form>
 
@@ -62,7 +73,7 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <p style="margin: 0;" th:utext="#{result.summary(${#numbers.formatInteger(totalElements, 0, 'COMMA')})}">총 <span class="total-count">0</span>건의 데이터가 조회되었습니다.</p>
                     <a th:href="@{/api/v1/analysis/export/csv(month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}" 
-                       class="btn-csv" style="text-decoration: none; font-size: 13px;" th:text="#{result.export.csv}">CSV 저장</a>
+                        class="btn-csv" style="text-decoration: none; font-size: 13px;" th:text="#{result.export.csv}">CSV 저장</a>
                 </div>
             </div>
 
@@ -81,7 +92,7 @@
                         <tr th:each="row : ${result}">
                             <td><a href="#" class="station-name" th:text="${row.stationName}"></a></td>
                             <td><span class="district-tag" th:text="#{ 'district.' + ${row.district} }"></span></td>
-                            <td th:text="${row.month} + #{filter.month.suffix}"></td>
+                            <td th:text="#{ 'month.' + ${row.month} }"></td>
                             <td th:text="#{ 'age.' + ${row.ageGroup} }"></td>
                             <td class="use-count" th:text="${#numbers.formatInteger(row.totalUseCnt, 0, 'COMMA')}"></td>
                         </tr>
@@ -95,24 +106,24 @@
                 <!-- Pagination Section -->
                 <div class="pagination" th:if="${totalElements > 0}">
                     <a th:if="${currentPage > 1}" 
-                       th:href="@{/analysis/search(page=1, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
-                       th:title="#{pagination.first}">&laquo;</a>
+                        th:href="@{/analysis/search(page=1, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+                        th:title="#{pagination.first}">&laquo;</a>
 
                     <a th:if="${currentPage > 1}" 
-                       th:href="@{/analysis/search(page=${currentPage - 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
-                       th:title="#{pagination.prev}">&lt;</a>
+                        th:href="@{/analysis/search(page=${currentPage - 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+                        th:title="#{pagination.prev}">&lt;</a>
                     
                     <span class="current-page">
                         <span th:text="${currentPage}">1</span> / <span th:text="${totalPages}">1</span>
                     </span>
                     
                     <a th:if="${currentPage < totalPages}" 
-                       th:href="@{/analysis/search(page=${currentPage + 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
-                       th:title="#{pagination.next}">&gt;</a>
+                        th:href="@{/analysis/search(page=${currentPage + 1}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+                        th:title="#{pagination.next}">&gt;</a>
 
                     <a th:if="${currentPage < totalPages}" 
-                       th:href="@{/analysis/search(page=${totalPages}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
-                       th:title="#{pagination.last}">&raquo;</a>
+                        th:href="@{/analysis/search(page=${totalPages}, month=${request.month}, district=${request.district}, ageGroup=${request.ageGroup})}"
+                        th:title="#{pagination.last}">&raquo;</a>
                 </div>
             </div>
         </div>
@@ -121,6 +132,10 @@
     <!-- 푸터 -->
     <th:block th:replace="~{fragments/footer :: footer}"></th:block>
 </div>
+
+<!-- Virtual Select JS -->
+<script src="https://cdn.jsdelivr.net/npm/virtual-select-plugin@1.0.39/dist/virtual-select.min.js"></script>
+<script defer th:src="@{/js/analysis/analysis.js}"></script>
 
 </body>
 </html>
