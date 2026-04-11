@@ -8,11 +8,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="findAll" resultType="com.metanet.myddareungi.domain.notification.model.Notification"> SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT FROM NOTIFICATION ORDER BY CREATED_AT DESC </select>
 	
 	<!--  알림 목록 조회  -->
-	<select id="findAll" parameterType="long" resultType="com.metanet.myddareungi.domain.notification.model.Notification"> 
+	<select id="findAllById" parameterType="long" resultType="com.metanet.myddareungi.domain.notification.model.Notification"> 
 		SELECT NOTIFICATION_ID, USER_ID, NOTIFICATION_TYPE, MESSAGE, FILE_ID, IS_READ, CREATED_AT 
 		FROM NOTIFICATION 
 		WHERE USER_ID = #{userId}
-		ORDER BY CREATED_AT DESC </select>
+		ORDER BY CREATED_AT DESC 
+	</select>
 	
 	<!--  알림 읽음 처리  -->
 	<update id="markAsRead" parameterType="long"> UPDATE NOTIFICATION SET IS_READ = 1 WHERE NOTIFICATION_ID = #{notificationId} </update>

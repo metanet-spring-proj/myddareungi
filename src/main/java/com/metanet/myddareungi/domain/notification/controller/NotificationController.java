@@ -26,7 +26,7 @@ public class NotificationController {
 
 	
 	// 알림 목록 조회
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<Notification>> getNotifications() {
 		List<Notification> notifications = notificationService.findAll();
 		return ResponseEntity.ok(notifications);
@@ -37,7 +37,7 @@ public class NotificationController {
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		long userId = userDetails.getUserId();
 		
-		List<Notification> notifications = notificationService.findAllbyId(userId);
+		List<Notification> notifications = notificationService.findAllById(userId);
 		return ResponseEntity.ok(notifications);
 	}
 	
