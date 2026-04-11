@@ -23,26 +23,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- 파일 업로드 -->
     <insert id="uploadFile" parameterType="com.metanet.myddareungi.domain.files.model.UploadFile">
-    <![CDATA[
-        INSERT INTO file_upload (
-            uploader_id,
-            file_name,
-            uuid_file_name,
-            storage_path,
-            file_size,
-            status,
-            uploaded_at
-        )
-        VALUES (
-            #{uploaderId},
-            #{fileName},
-            #{uuidFileName},
-            #{storagePath},
-            #{fileSize},
-            #{status},
-            CURRENT_TIMESTAMP
-        )
-    ]]>
+	    <![CDATA[
+	        INSERT INTO file_upload (
+	            uploader_id,
+	            file_name,
+	            uuid_file_name,
+	            storage_path,
+	            file_size,
+	            status,
+	            uploaded_at
+	        )
+	        VALUES (
+	            #{uploaderId},
+	            #{fileName},
+	            #{uuidFileName},
+	            #{storagePath},
+	            #{fileSize},
+	            #{status},
+	            CURRENT_TIMESTAMP
+	        )
+	    ]]>
     </insert>
     
     <!-- 전체 파일 조회 -->
@@ -119,4 +119,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</update>
 
+	<select id="getLastFileId" resultType="long">
+		SELECT MAX(file_id) FROM file_upload
+	</select>
 </mapper>

@@ -2,16 +2,21 @@ package com.metanet.myddareungi.domain.notification.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.metanet.myddareungi.config.CustomUserDetails;
 import com.metanet.myddareungi.domain.notification.model.Notification;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
+import com.metanet.myddareungi.domain.notification.service.SseEmitterService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +26,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationController {
 	private final INotificationService notificationService;
-
+	private final SseEmitterService sseEmitterService;
 	
 	// 알림 목록 조회
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<Notification>> getNotifications() {
 		List<Notification> notifications = notificationService.findAll();
+		return ResponseEntity.ok(notifications);
+	}
+	
+	// 읽지 않은 알림만 조회
+	@GetMapping("/unread")
+	  public ResponseEntity<List<Notification>> getMyUnreadNotifications(Authentication authentication) {
+	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	      long userId = userDetails.getUserId();
+	      return ResponseEntity.ok(notificationService.findUnreadById(userId));
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		
+		List<Notification> notifications = notificationService.findAllById(userId);
 		return ResponseEntity.ok(notifications);
 	}
 	
@@ -40,8 +62,10 @@ public class NotificationController {
 	
 	// 알림 읽음 처리
 	@PatchMapping("/read")
-	public ResponseEntity<Void> markReadAll() {
-		notificationService.markAllRead();
+	public ResponseEntity<Void> markReadAll(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		notificationService.markAllRead(userId);
 		return ResponseEntity.ok().build();
 	}
 
@@ -54,5 +78,17 @@ public class NotificationController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	  public SseEmitter subscribe(Authentication authentication) {
+	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+	      long userId = userDetails.getUserId();
+	      SseEmitter emitter = sseEmitterService.addEmitter(userId);
+	      try {
+	          emitter.send(SseEmitter.event().name("connect").data("connected"));
+	      } catch (Exception e) {
+	          sseEmitterService.removeEmitter(userId, emitter);
+	      }
+	      return emitter;
+	  }
 	
 }

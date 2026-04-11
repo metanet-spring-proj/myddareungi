@@ -6,10 +6,14 @@ import com.metanet.myddareungi.domain.notification.model.Notification;
 
 public interface INotificationService {
     List<Notification> findAll();
+    List<Notification> findAllById(long userId);
+    List<Notification> findUnreadById(long userId);
     
-    void markAllRead();
+    void markAllRead(long userId);
     void markAsRead(long notificationId);
     void deleteById(long notificationId);
     
     void insert(long userId, String notificationType, String message, long fileId );
+    
+    void setStatus(long fileId ,String status);
 }
