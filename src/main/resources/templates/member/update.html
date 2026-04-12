@@ -127,6 +127,7 @@
 			}
 
 			const userId = /*[[${member?.userId}]]*/ null;
+			const userRole = /*[[${userRole}]]*/ null;
 
 			const showMessage = (element, message) => {
 				element.textContent = message;
@@ -183,7 +184,7 @@
 						return;
 					}
 
-					window.location.href = '/mypage';
+					window.location.href = (userRole === 'ADMIN') ? '/admin/mypage' : '/mypage';
 
 				} catch (error) {
 					showMessage(errorBox, '요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');

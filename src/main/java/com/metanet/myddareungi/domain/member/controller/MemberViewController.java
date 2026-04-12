@@ -48,10 +48,17 @@ public class MemberViewController {
 		if (!isAuthenticated(authentication)) {
 			return "redirect:/login";
 		}
-		// 로그인된 유저 정보 꺼내서 폼에 채워줌
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		Member member = memberAuthService.getMember(userDetails.getUsername());
 		model.addAttribute("member", member);
+
+		// JWT authorities에서 role 추출
+		String role = authentication.getAuthorities().stream()
+				.findFirst()
+				.map(a -> a.getAuthority().replace("ROLE_", ""))
+				.orElse("USER");
+		model.addAttribute("userRole", role);
+
 		return "member/update";
 	}
 
