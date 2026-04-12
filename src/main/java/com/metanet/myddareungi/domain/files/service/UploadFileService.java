@@ -51,6 +51,10 @@ public class UploadFileService implements IUploadFileService {
 	public void reviewFile(long fileId, String status, long reviewedBy) {
 	    UploadFile file = uploadFileRepository.getFile(fileId);
 	    
+	    if(file == null) {
+	    	throw new IllegalArgumentException();
+	    }
+	    
 	    file.setStatus(status);
 	    file.setReviewedBy(reviewedBy);
 	    
