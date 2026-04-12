@@ -70,9 +70,11 @@ public class AdminControllerTest {
                 mockDashboardData.setPendingCount(5);
                 mockDashboardData.setTodayUploadCount(10);
                 mockDashboardData.setPendingFiles(new ArrayList<>());
+                mockDashboardData.setTotalPages(1);
+                mockDashboardData.setCurrentPage(0);
 
                 given(memberAuthService.getMember("adminUser")).willReturn(mockMember);
-                given(adminService.getDashboardData(1L)).willReturn(mockDashboardData);
+                given(adminService.getDashboardData(1L, 0, 10)).willReturn(mockDashboardData);
 
                 mockMvc.perform(get("/admin/mypage"))
                                 .andDo(print())
@@ -94,7 +96,7 @@ public class AdminControllerTest {
                                 .userName("일반사용자")
                                 .build();
                 given(memberAuthService.getMember("normalUser")).willReturn(mockMember);
-                given(adminService.getDashboardData(2L)).willReturn(new AdminDashboardDto());
+                given(adminService.getDashboardData(2L, 0, 10)).willReturn(new AdminDashboardDto());
 
                 mockMvc.perform(get("/admin/mypage"))
                                 .andDo(print())

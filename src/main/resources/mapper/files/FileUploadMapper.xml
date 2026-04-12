@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="status" column="status"/>
         <result property="reviewedBy" column="reviewed_by"/>
         <result property="reviewedAt" column="reviewed_at"/>
-        <result property="uploadAt" column="uploaded_at"/>
+        <result property="uploadedAt" column="uploaded_at"/>
     </resultMap>
 
 	
@@ -46,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
     
     <!-- 전체 파일 조회 -->
-    <select id="getAllFile" resultType="com.metanet.myddareungi.domain.files.model.UploadFile">
+    <select id="getAllFile" resultMap="UploadFileMap">
         <![CDATA[
         SELECT
             file_id,
@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY uploaded_at DESC
         ]]>
     </select>
-    
+
     <!-- 특정 업로더의 파일 조회 -->
 	<select id="getAllFilesByUploaderId" parameterType="long" resultMap="UploadFileMap">
 	    <![CDATA[

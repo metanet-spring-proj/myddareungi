@@ -16,4 +16,7 @@ public class AdminDashboardDto {
     private int todayUploadCount;
 
     private List<PendingFileDto> pendingFiles;
+
+    private int totalPages;
+    private int currentPage;
 }

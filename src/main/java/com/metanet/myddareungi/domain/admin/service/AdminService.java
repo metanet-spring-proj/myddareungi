@@ -25,7 +25,7 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public AdminDashboardDto getDashboardData(long userId) {
+    public AdminDashboardDto getDashboardData(long userId, int page, int size) {
         AdminDashboardDto dashboardDto = new AdminDashboardDto();
 
         // 1. 관리자 정보 조회
@@ -41,21 +41,26 @@ public class AdminService implements IAdminService {
         }
 
         // 2. 통계 데이터 조회 (검토 대기 수, 금일 업로드 수)
-        dashboardDto.setPendingCount(adminRepository.countPendingFiles());
+        int pendingCount = adminRepository.countPendingFiles();
+        dashboardDto.setPendingCount(pendingCount);
         dashboardDto.setTodayUploadCount(adminRepository.countTodayUploads());
 
-        // 3. 파일 목록 조회 및 PENDING 상태 필터링
-        List<UploadFile> allFiles = uploadFileService.getAllFile();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        // 3. 페이징 계산
+        int totalPages = (pendingCount == 0) ? 1 : (int) Math.ceil((double) pendingCount / size);
+        page = Math.max(0, Math.min(page, totalPages - 1));
+        dashboardDto.setTotalPages(totalPages);
+        dashboardDto.setCurrentPage(page);
 
-        List<PendingFileDto> mappedFiles = allFiles.stream()
-                .filter(file -> "PENDING".equals(file.getStatus())) // 검토 대기열이므로 PENDING만 필터링
+        // 4. 파일 목록 페이징 조회 (PENDING만)
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+
+        List<PendingFileDto> mappedFiles = adminRepository.getPendingFilesPaged(page * size, size).stream()
                 .map(file -> {
                     PendingFileDto dto = new PendingFileDto();
                     dto.setFileId(file.getFileId());
                     dto.setFileName(file.getFileName());
                     dto.setStatus(file.getStatus());
-                    dto.setUploadDate(file.getUploadAt() != null ? sdf.format(file.getUploadAt()) : "-");
+                    dto.setUploadDate(file.getUploadedAt() != null ? sdf.format(file.getUploadedAt()) : "-");
 
                     // 작성자 정보는 uploaderId 사용 (이름 조회 기능 제거)
                     dto.setWriter(String.valueOf(file.getUploaderId()));
