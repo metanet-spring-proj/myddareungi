@@ -36,7 +36,7 @@ public class NotificationServiceTest {
     @DisplayName("insert() - Notification 필드가 저장된다")
     void insert_필드설정_정상() {
         // when
-        notificationService.insert(10L, "FILE UPLOAD", "CSV파일이 업로드", 1L);
+        notificationService.insert(10L, "FILE UPLOAD", "CSV파일이 업로드 되었습니다.", 1L);
 
         // then
         verify(notificationRepository).insert(argThat(n ->
