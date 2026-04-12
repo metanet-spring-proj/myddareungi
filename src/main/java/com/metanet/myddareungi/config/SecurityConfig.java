@@ -3,6 +3,7 @@ package com.metanet.myddareungi.config;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,7 +34,8 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(
 			HttpSecurity http,
-			ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider) throws Exception {
+			ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilterProvider,
+			JwtCookieUtils jwtCookieUtils) throws Exception {
 		http
 				.csrf(csrf -> {
 					CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
@@ -61,6 +63,13 @@ public class SecurityConfig {
 						.requestMatchers("/analysis/**", "/api/v1/analysis/**").authenticated()
 						.requestMatchers("/css/**").permitAll()
 						.anyRequest().authenticated())
+				.logout(logout -> logout
+						.logoutUrl("/api/v1/auth/logout")
+						.addLogoutHandler((request, response, authentication) -> response.addHeader(
+								HttpHeaders.SET_COOKIE,
+								jwtCookieUtils.createExpiredAccessTokenCookie().toString()))
+						.logoutSuccessHandler((request, response, authentication) -> response.sendRedirect("/login?logout=1"))
+						.permitAll())
 				.formLogin(form -> form
 						.loginPage("/login")
 						.permitAll());
