@@ -67,12 +67,11 @@ class MemberViewControllerTest {
                 .andExpect(view().name("member/signup"));
     }
 
-    // ── GET /user-mypage ──────────────────────
+    // ── GET /mypage ──────────────────────
     @Test
     @WithMockUser(username = "testUser")
-    @DisplayName("GET /user-mypage - 로그인 사용자 → 마이페이지 반환")
+    @DisplayName("GET /mypage - 로그인 사용자 → 마이페이지 반환")
     void myPage_로그인_마이페이지() throws Exception {
-        // given
         Member fakeMember = Member.builder()
                 .userId(1L)
                 .loginId("testUser")
@@ -82,10 +81,10 @@ class MemberViewControllerTest {
                 .build();
 
         when(memberAuthService.getMember("testUser")).thenReturn(fakeMember);
-        when(uploadFileService.getAllFilesByUploaderId(1L)).thenReturn(List.of());
+        when(uploadFileService.countFilesByUploaderId(1L)).thenReturn(0);
+        when(uploadFileService.getFilesByUploaderIdPaged(1L, 0, 5)).thenReturn(List.of());
 
-        // when & then
-        mockMvc.perform(get("/user-mypage"))
+        mockMvc.perform(get("/mypage"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("mypage/user-mypage"))
                 .andExpect(model().attribute("userName", "홍길동"))
@@ -93,37 +92,37 @@ class MemberViewControllerTest {
     }
 
     @Test
-    @DisplayName("GET /user-mypage - 비로그인 사용자 → 로그인 페이지로 리디렉션")
+    @DisplayName("GET /mypage - 비로그인 사용자 → 로그인 페이지로 리디렉션")
     void myPage_비로그인_로그인리디렉션() throws Exception {
-        mockMvc.perform(get("/user-mypage"))
+        mockMvc.perform(get("/mypage"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
     }
 
-    // ── GET /users/update ─────────────────────
+    // ── GET /mypage/edit ─────────────────────
     @Test
     @WithMockUser(username = "testUser")
-    @DisplayName("GET /users/update - 로그인 사용자 → 수정 페이지 반환")
+    @DisplayName("GET /mypage/edit - 로그인 사용자 → 수정 페이지 반환")
     void updatePage_로그인_수정페이지() throws Exception {
-        // given
         Member fakeMember = Member.builder()
                 .userId(1L)
                 .loginId("testUser")
                 .userName("홍길동")
+                .role("USER")
                 .build();
         when(memberAuthService.getMember("testUser")).thenReturn(fakeMember);
 
-        // when & then
-        mockMvc.perform(get("/users/update"))
+        mockMvc.perform(get("/mypage/edit"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("member/update"))
-                .andExpect(model().attributeExists("member"));
+                .andExpect(model().attributeExists("member"))
+                .andExpect(model().attributeExists("userRole"));
     }
 
     @Test
-    @DisplayName("GET /users/update - 비로그인 사용자 → 로그인 페이지로 리디렉션")
+    @DisplayName("GET /mypage/edit - 비로그인 사용자 → 로그인 페이지로 리디렉션")
     void updatePage_비로그인_로그인리디렉션() throws Exception {
-        mockMvc.perform(get("/users/update"))
+        mockMvc.perform(get("/mypage/edit"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
     }
