@@ -33,16 +33,6 @@ public class JwtCookieUtils {
 			.build();
 	}
 
-	public ResponseCookie createExpiredAccessTokenCookie() {
-		return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, "")
-			.httpOnly(true)
-			.secure(secureCookie)
-			.path("/")
-			.sameSite("Lax")
-			.maxAge(0)
-			.build();
-	}
-
 	public Optional<String> resolveAccessToken(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies == null || cookies.length == 0) {
