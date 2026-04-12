@@ -28,7 +28,7 @@ public class LoggingAspect {
         Exception caughtException = null;
 
         try {
-            return joinPoint.proceed();
+            return joinPoint.proceed();  // 실제 Controller 실행
 
         } catch (Exception e) {
             caughtException = e; // 에러 잡아두고
