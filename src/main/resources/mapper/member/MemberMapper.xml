@@ -52,11 +52,6 @@
           AND EMAIL = #{email}
     </select>
 
-    <select id="countUsers" resultType="int">
-        SELECT COUNT(*)
-        FROM USERS
-    </select>
-
     <insert id="insertMember" parameterType="com.metanet.myddareungi.domain.member.model.Member">
         INSERT INTO USERS (
             LOGIN_ID,
