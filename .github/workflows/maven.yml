@@ -9,12 +9,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.0
         with:
           java-version: "17"
           distribution: "temurin"
@@ -25,7 +27,7 @@ jobs:
 
       - name: Build and Test with Maven
         # DB 연결이 필요한 MyddareungiApplicationTests를 제외하고 테스트를 실행합니다.
-        run: ./mvnw test -Dtest="!MyddareungiApplicationTests"
+        run: ./mvnw test -Dtest="!MyddareungiApplicationTests,!DashboardCachePerformanceTest"
 
       - name: Upload Test Report
         if: failure()

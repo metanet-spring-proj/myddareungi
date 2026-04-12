@@ -1,8 +1,11 @@
 package com.metanet.myddareungi.domain.admin.repository;
 
+import com.metanet.myddareungi.domain.files.model.UploadFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.metanet.myddareungi.domain.member.model.Member;
+
+import java.util.List;
 
 @Mapper
 public interface IAdminRepository {
@@ -14,4 +17,8 @@ public interface IAdminRepository {
 
     // 관리자 정보 조회 (JWT 미사용 시 직접 조회용)
     Member getAdminInfo(@Param("userId") long userId);
+
+    List<UploadFile> getPendingFilesPaged(
+            @Param("offset") int offset,
+            @Param("size") int size);
 }

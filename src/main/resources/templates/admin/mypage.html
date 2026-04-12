@@ -48,7 +48,7 @@
                             <span class="role-badge" th:text="#{profile.role}">최고 관리자</span>
                         </div>
                     </div>
-                    <a th:href="@{/users/update}" class="edit-profile-btn" th:text="#{profile.edit}">정보 수정</a>
+                    <a th:href="@{/mypage/edit}" class="edit-profile-btn" th:text="#{profile.edit}">정보 수정</a>
                 </div>
 
                 <div class="divider"></div>
@@ -79,7 +79,6 @@
                 <div class="card table-card">
                     <div class="table-header">
                         <h3 th:text="#{table.title}">데이터 검토 대기열</h3>
-                        <a href="#" th:text="#{table.viewall}">모두 보기</a>
                     </div>
 
                     <table>
@@ -138,6 +137,29 @@
                         </tr>
                         </tbody>
                     </table>
+                    <!-- 페이지네이션 -->
+                    <div class="pagination">
+                        <a th:href="@{/admin/mypage(page=0)}"
+                           th:class="${currentPage == 0} ? 'page-btn disabled' : 'page-btn'">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <a th:href="@{/admin/mypage(page=${currentPage - 1})}"
+                           th:class="${currentPage == 0} ? 'page-btn disabled' : 'page-btn'">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <a th:each="p : ${pageNumbers}"
+                           th:href="@{/admin/mypage(page=${p})}"
+                           th:text="${p + 1}"
+                           th:class="${p == currentPage} ? 'page-btn active' : 'page-btn'"></a>
+                        <a th:href="@{/admin/mypage(page=${currentPage + 1})}"
+                           th:class="${currentPage == totalPages - 1} ? 'page-btn disabled' : 'page-btn'">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a th:href="@{/admin/mypage(page=${totalPages - 1})}"
+                           th:class="${currentPage == totalPages - 1} ? 'page-btn disabled' : 'page-btn'">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </div>
                 </div>
 
             </div>

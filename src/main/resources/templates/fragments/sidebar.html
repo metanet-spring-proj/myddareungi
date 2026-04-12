@@ -24,10 +24,11 @@
                class="menu-item" 
                th:classappend="${activeMenu == 'mypage' ? 'active' : ''}" th:text="#{sidebar.menu.mypage.admin}">관리자 마이페이지</a>
 
-            <a sec:authorize="hasRole('USER')" 
-               th:href="@{/user-mypage}" 
-               class="menu-item" 
-               th:classappend="${activeMenu == 'mypage' ? 'active' : ''}" th:text="#{sidebar.menu.mypage.user}">마이페이지</a>
+			<a sec:authorize="hasRole('USER')"
+			   th:href="@{/mypage}"
+			   class="menu-item"
+			   th:classappend="${activeMenu == 'mypage' ? 'active' : ''}"
+			   th:text="#{sidebar.menu.mypage.user}">마이페이지</a>
         </nav>
 
 		<div class="sidebar-bottom">

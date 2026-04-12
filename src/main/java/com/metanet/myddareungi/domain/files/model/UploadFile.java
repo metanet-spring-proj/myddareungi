@@ -15,5 +15,5 @@ public class UploadFile {
 	String status;
 	long reviewedBy;
 	Timestamp reviewedAt;
-	Timestamp uploadAt;
+	Timestamp uploadedAt;
 }	
