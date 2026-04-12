@@ -15,22 +15,22 @@ import lombok.RequiredArgsConstructor;
 public class NotificationService implements INotificationService {
 	private final INotificationRepository notificationRepository;
 	private final SseEmitterService sseEmitterService;
-	
+
 	@Override
 	public List<Notification> findAll() {
 		return notificationRepository.findAll();
 	}
-	
+
 	@Override
 	public List<Notification> findAllById(long userId){
 		return notificationRepository.findAllById(userId);
 	}
-	
+
 	@Override
-	  public List<Notification> findUnreadById(long userId) {
-	      return notificationRepository.findUnreadById(userId);
+	public List<Notification> findUnreadById(long userId) {
+		return notificationRepository.findUnreadById(userId);
 	}
-	
+
 
 	@Override
 	public void markAllRead(long userId) {
@@ -57,15 +57,15 @@ public class NotificationService implements INotificationService {
 		notification.setMessage(message);
 		notification.setFileId(fileId);
 		notificationRepository.insert(notification);
-		
+
 		// SSE 실시간 전송
-	    sseEmitterService.sendToUser(userId, notification);
+		sseEmitterService.sendToUser(userId, notification);
 	}
 
 	@Override
-	  public void setStatus(long fileId, String status) {
-	      Notification notification = notificationRepository.findByFileId(fileId);
-	      notificationRepository.setStatus(status, notification.getNotificationId());
-	  }
+	public void setStatus(long fileId, String status) {
+		Notification notification = notificationRepository.findByFileId(fileId);
+		notificationRepository.setStatus(status, notification.getNotificationId());
+	}
 
 }
