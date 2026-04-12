@@ -27,31 +27,31 @@ import lombok.RequiredArgsConstructor;
 public class NotificationController {
 	private final INotificationService notificationService;
 	private final SseEmitterService sseEmitterService;
-	
+
 	// 알림 목록 조회
 	@GetMapping("/all")
 	public ResponseEntity<List<Notification>> getNotifications() {
 		List<Notification> notifications = notificationService.findAll();
 		return ResponseEntity.ok(notifications);
 	}
-	
+
 	// 읽지 않은 알림만 조회
 	@GetMapping("/unread")
-	  public ResponseEntity<List<Notification>> getMyUnreadNotifications(Authentication authentication) {
-	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-	      long userId = userDetails.getUserId();
-	      return ResponseEntity.ok(notificationService.findUnreadById(userId));
+	public ResponseEntity<List<Notification>> getMyUnreadNotifications(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		return ResponseEntity.ok(notificationService.findUnreadById(userId));
 	}
-	
+
 	@GetMapping
 	public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		long userId = userDetails.getUserId();
-		
+
 		List<Notification> notifications = notificationService.findAllById(userId);
 		return ResponseEntity.ok(notifications);
 	}
-	
+
 
 	// 알림 읽음 처리
 	@PatchMapping("/{notificationId}/read")
@@ -59,7 +59,7 @@ public class NotificationController {
 		notificationService.markAsRead(notificationId);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	// 알림 읽음 처리
 	@PatchMapping("/read")
 	public ResponseEntity<Void> markReadAll(Authentication authentication) {
@@ -77,18 +77,18 @@ public class NotificationController {
 		notificationService.deleteById(notificationId);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	@GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	  public SseEmitter subscribe(Authentication authentication) {
-	      CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-	      long userId = userDetails.getUserId();
-	      SseEmitter emitter = sseEmitterService.addEmitter(userId);
-	      try {
-	          emitter.send(SseEmitter.event().name("connect").data("connected"));
-	      } catch (Exception e) {
-	          sseEmitterService.removeEmitter(userId, emitter);
-	      }
-	      return emitter;
-	  }
-	
+	public SseEmitter subscribe(Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		long userId = userDetails.getUserId();
+		SseEmitter emitter = sseEmitterService.addEmitter(userId);
+		try {
+			emitter.send(SseEmitter.event().name("connect").data("connected"));
+		} catch (Exception e) {
+			sseEmitterService.removeEmitter(userId, emitter);
+		}
+		return emitter;
+	}
+
 }
