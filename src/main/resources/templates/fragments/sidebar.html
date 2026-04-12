@@ -29,16 +29,11 @@
 			   class="menu-item"
 			   th:classappend="${activeMenu == 'mypage' ? 'active' : ''}"
 			   th:text="#{sidebar.menu.mypage.user}">마이페이지</a>
-		</nav>
+        </nav>
 
 		<div class="sidebar-bottom">
-			<button
-				type="button"
-				class="menu-item logout-button"
-				th:text="#{sidebar.menu.signout}"
-				th:attr="data-logout-url=@{/api/v1/auth/logout},data-login-url=@{/login(logout=1)},data-error-message=#{auth.logout.error}">Sign Out</button>
+			<a href="#" class="menu-item" th:text="#{sidebar.menu.signout}">Sign Out</a>
 		</div>
-		<script th:src="@{/js/common/logout.js}"></script>
 	</aside>
 </body>
 

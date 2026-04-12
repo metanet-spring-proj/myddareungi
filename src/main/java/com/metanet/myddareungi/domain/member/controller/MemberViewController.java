@@ -27,10 +27,7 @@ public class MemberViewController {
 	 private final IUploadFileService uploadFileService; 
 
 	@GetMapping("/login")
-	public String loginPage(Authentication authentication, @RequestParam(required = false) String logout) {
-		if (logout != null) {
-			return "member/login";
-		}
+	public String loginPage(Authentication authentication) {
 		if (isAuthenticated(authentication)) {
 			return "redirect:/dashboard";
 		}
