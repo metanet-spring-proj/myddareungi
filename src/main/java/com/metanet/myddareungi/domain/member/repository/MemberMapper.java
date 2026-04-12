@@ -16,8 +16,6 @@ public interface MemberMapper {
 
 	Member findByLoginIdAndEmail(@Param("loginId") String loginId, @Param("email") String email);
 
-	int countUsers();
-
 	int insertMember(Member member);
 	
 	//회원 단건 조회
