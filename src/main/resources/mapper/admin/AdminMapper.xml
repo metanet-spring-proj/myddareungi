@@ -37,4 +37,17 @@
         ]]>
     </select>
 
+    <!-- PENDING 파일 페이징 조회 -->
+    <select id="getPendingFilesPaged" resultType="com.metanet.myddareungi.domain.files.model.UploadFile">
+        <![CDATA[
+    SELECT
+        file_id, uploader_id, file_name, uuid_file_name,
+        storage_path, file_size, status, reviewed_by, reviewed_at, uploaded_at
+    FROM file_upload
+    WHERE status = 'PENDING'
+    ORDER BY uploaded_at DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+    ]]>
+    </select>
+
 </mapper>
