@@ -122,4 +122,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getLastFileId" resultType="long">
 		SELECT MAX(file_id) FROM file_upload
 	</select>
+
+    <!-- 페이징 조회 -->
+    <select id="getFilesByUploaderIdPaged" resultMap="UploadFileMap">
+        <![CDATA[
+    SELECT
+        file_id, uploader_id, file_name, uuid_file_name,
+        storage_path, file_size, status, reviewed_by, reviewed_at, uploaded_at
+    FROM file_upload
+    WHERE uploader_id = #{uploaderId}
+    ORDER BY uploaded_at DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+    ]]>
+    </select>
+
+    <!-- 전체 건수 -->
+    <select id="countFilesByUploaderId" parameterType="long" resultType="int">
+        SELECT COUNT(*) FROM file_upload WHERE uploader_id = #{uploaderId}
+    </select>
 </mapper>

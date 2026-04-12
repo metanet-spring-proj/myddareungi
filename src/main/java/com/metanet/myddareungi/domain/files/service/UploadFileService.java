@@ -68,7 +68,15 @@ public class UploadFileService implements IUploadFileService {
 	public long getLastFileId() {
 		return uploadFileRepository.getLastFileId();
 	}
-	
-	
+
+	@Override
+	public List<UploadFile> getFilesByUploaderIdPaged(long uploaderId, int offset, int size) {
+		return uploadFileRepository.getFilesByUploaderIdPaged(uploaderId, offset, size);
+	}
+
+	@Override
+	public int countFilesByUploaderId(long uploaderId) {
+		return uploadFileRepository.countFilesByUploaderId(uploaderId);
+	}
 
 }

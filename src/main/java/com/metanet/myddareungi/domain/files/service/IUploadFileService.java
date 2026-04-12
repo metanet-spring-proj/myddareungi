@@ -13,4 +13,8 @@ public interface IUploadFileService {
 	void deleteFile(long fileId);
 	void reviewFile(long fileId, String status, long reviewedBy);
 	long getLastFileId();
+
+	List<UploadFile> getFilesByUploaderIdPaged(long uploaderId, int offset, int size);
+	int countFilesByUploaderId(long uploaderId);
+
 }
