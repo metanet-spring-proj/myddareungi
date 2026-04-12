@@ -25,8 +25,11 @@ public class SystemLogWriter {
                     + "." + joinPoint.getSignature().getName();
 
             String arguments = Arrays.toString(joinPoint.getArgs());
-            if (arguments.length() > 2000) {
-                arguments = arguments.substring(0, 1997) + "...";
+
+            // 바이트 기준으로 자르기
+            byte[] argBytes = arguments.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            if (argBytes.length > 2000) {
+                arguments = new String(argBytes, 0, 1994, java.nio.charset.StandardCharsets.UTF_8) + "...";
             }
 
             String errorMessage = null;
