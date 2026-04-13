@@ -1,0 +1,235 @@
+:root {
+    --page-bg: #f7f9ff;
+    --brand-box: #d8e2ff;
+    --card-bg: #ffffff;
+    --text-primary: #181c20;
+    --text-secondary: #414754;
+    --text-muted: #727785;
+    --divider: #c1c6d6;
+    --button-bg: #005bbf;
+    --button-hover: #0454ad;
+    --button-shadow: rgba(0, 91, 191, 0.1);
+    --card-shadow: rgba(0, 91, 191, 0.06);
+    --error-bg: #fff1f2;
+    --error-text: #b42318;
+    --error-border: #fecdca;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: var(--page-bg);
+    color: var(--text-primary);
+}
+
+.error-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    overflow: hidden;
+}
+
+.error-page::before,
+.error-page::after {
+    content: "";
+    position: absolute;
+    width: 480px;
+    height: 380px;
+    border-radius: 12px;
+    filter: blur(60px);
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+.error-page::before {
+    top: -80px;
+    right: -60px;
+    background: #fecdca;
+}
+
+.error-page::after {
+    left: -60px;
+    bottom: -80px;
+    background: #d8e2ff;
+}
+
+.error-shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 480px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon-box {
+    width: 64px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--brand-box);
+    color: var(--button-bg);
+}
+
+.brand-icon {
+    width: 36px;
+    height: 24px;
+}
+
+.brand-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+}
+
+.error-card {
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 48px 40px 40px;
+    box-shadow: 0 12px 32px -4px var(--card-shadow), 0 2px 8px -2px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+}
+
+.error-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--error-bg);
+    border: 1.5px solid var(--error-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--error-text);
+    flex-shrink: 0;
+}
+
+.error-icon-wrap svg {
+    width: 32px;
+    height: 32px;
+}
+
+.error-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+}
+
+.error-message-box {
+    width: 100%;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--error-text);
+    word-break: break-word;
+    text-align: left;
+}
+
+.error-sub {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.error-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.btn-primary {
+    flex: 1;
+    height: 52px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--button-bg);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 8px 16px -4px var(--button-shadow);
+    transition: background 0.15s;
+}
+
+.btn-primary:hover {
+    background: var(--button-hover);
+}
+
+.btn-secondary {
+    flex: 1;
+    height: 52px;
+    border: 1.5px solid var(--divider);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--button-bg);
+    color: var(--button-bg);
+}
+
+.error-footer {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+@media (max-width: 520px) {
+    .error-page {
+        padding: 40px 16px;
+    }
+
+    .error-card {
+        padding: 36px 24px 32px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+}
