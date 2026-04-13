@@ -155,10 +155,25 @@
 				event.preventDefault();
 				clearMessages();
 
-				const payload = {
-					userName: readField('userName'),
-					email: readField('email')
-				};
+				const userName = readField('userName');
+				const email = readField('email');
+
+				// 클라이언트 사이드 검증
+				if (!userName) {
+					showMessage(errorBox, '이름을 입력해주세요.');
+					return;
+				}
+				if (!email) {
+					showMessage(errorBox, '이메일을 입력해주세요.');
+					return;
+				}
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (!emailRegex.test(email)) {
+					showMessage(errorBox, '이메일 형식이 올바르지 않습니다.');
+					return;
+				}
+
+				const payload = { userName, email };
 
 				toggleSubmitting(true);
 
@@ -180,7 +195,13 @@
 					});
 
 					if (!response.ok) {
-						showMessage(errorBox, '수정 중 오류가 발생했습니다.');
+						try {
+							const errorData = await response.json();
+							const message = errorData.message || '수정 중 오류가 발생했습니다.';
+							showMessage(errorBox, message);
+						} catch (e) {
+							showMessage(errorBox, '수정 중 오류가 발생했습니다.');
+						}
 						return;
 					}
 

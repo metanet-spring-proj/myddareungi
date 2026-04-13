@@ -103,11 +103,17 @@ public class MemberApiController {
         @ApiResponse(responseCode = "404", description = "회원 없음")
     })
     @PutMapping("/{userId}")
-    public ResponseEntity<MemberResponseDto> updateMember(
+    public ResponseEntity<?> updateMember(
         @Parameter(description = "수정할 회원 ID", required = true)
         @PathVariable Long userId,
-        @Valid @RequestBody MemberUpdateRequestDto requestDto
+        @Valid @RequestBody MemberUpdateRequestDto requestDto,
+        BindingResult bindingResult
     ) {
+        if (bindingResult.hasErrors()) {
+            String message = extractFirstErrorMessage(bindingResult);
+            return ResponseEntity.badRequest()
+                .body(java.util.Map.of("message", message));
+        }
         Member updatedMember = memberAuthService.updateMember(userId, requestDto);
         return ResponseEntity.ok(MemberResponseDto.of(updatedMember));
     }
