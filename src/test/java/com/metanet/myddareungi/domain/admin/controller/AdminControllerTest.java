@@ -102,4 +102,63 @@ public class AdminControllerTest {
                                 .andDo(print())
                                 .andExpect(status().isForbidden());
         }
-}
+
+        @Test
+        @WithMockUser(username = "adminUser", roles = { "ADMIN" })
+        @DisplayName("관리자 마이페이지 - page 파라미터가 전달되면 모델에 반영된다")
+        void adminMyPage_withPageParam_returnsCorrectPage() throws Exception {
+                Member mockMember = Member.builder()
+                                .userId(1L)
+                                .loginId("adminUser")
+                                .userName("관리자")
+                                .build();
+
+                AdminDashboardDto mockDashboardData = new AdminDashboardDto();
+                mockDashboardData.setAdminId(1L);
+                mockDashboardData.setAdminName("관리자");
+                mockDashboardData.setAdminEmail("admin@metanet.com");
+                mockDashboardData.setPendingCount(30);
+                mockDashboardData.setTodayUploadCount(5);
+                mockDashboardData.setPendingFiles(new ArrayList<>());
+                mockDashboardData.setTotalPages(3);
+                mockDashboardData.setCurrentPage(2);
+
+                given(memberAuthService.getMember("adminUser")).willReturn(mockMember);
+                given(adminService.getDashboardData(1L, 2, 10)).willReturn(mockDashboardData);
+
+                mockMvc.perform(get("/admin/mypage").param("page", "2").param("size", "10"))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(model().attribute("currentPage", 2))
+                                .andExpect(model().attribute("totalPages", 3));
+        }
+
+        @Test
+        @WithMockUser(username = "adminUser", roles = { "ADMIN" })
+        @DisplayName("관리자 마이페이지 - pageNumbers 블록이 올바르게 생성된다")
+        void adminMyPage_pageNumbersBlockCalculated() throws Exception {
+                Member mockMember = Member.builder()
+                                .userId(1L)
+                                .loginId("adminUser")
+                                .userName("관리자")
+                                .build();
+
+                AdminDashboardDto mockDashboardData = new AdminDashboardDto();
+                mockDashboardData.setAdminId(1L);
+                mockDashboardData.setAdminName("관리자");
+                mockDashboardData.setAdminEmail("admin@metanet.com");
+                mockDashboardData.setPendingCount(50);
+                mockDashboardData.setTodayUploadCount(0);
+                mockDashboardData.setPendingFiles(new ArrayList<>());
+                mockDashboardData.setTotalPages(5);
+                mockDashboardData.setCurrentPage(0);
+
+                given(memberAuthService.getMember("adminUser")).willReturn(mockMember);
+                given(adminService.getDashboardData(1L, 0, 10)).willReturn(mockDashboardData);
+
+                mockMvc.perform(get("/admin/mypage"))
+                                .andDo(print())
+                                .andExpect(status().isOk())
+                                .andExpect(model().attributeExists("pageNumbers"));
+        }
+}
