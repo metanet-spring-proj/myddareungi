@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,70 +72,84 @@ public class MemberApiController {
 				.body(SignupResponseDto.failure(ex.getMessage()));
 		}
 	}
-	
-    @Operation(summary = "회원 단건 조회", description = "userId로 특정 회원 정보를 조회합니다.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "조회 성공"),
-        @ApiResponse(responseCode = "404", description = "회원 없음")
-    })
-    @GetMapping("/{userId}")
-    public ResponseEntity<MemberResponseDto> getMember(
-        @Parameter(description = "조회할 회원 ID", required = true)
-        @PathVariable Long userId
-    ) {
-        Member member = memberAuthService.getMemberByUserId(userId);
-        return ResponseEntity.ok(MemberResponseDto.of(member));
-    }
-    
-    @Operation(summary = "회원 전체 조회", description = "가입된 모든 회원 목록을 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공")
-    @GetMapping
-    public ResponseEntity<List<MemberResponseDto>> getMemberList() {
-        List<MemberResponseDto> members = memberAuthService.getMemberList()
-            .stream()
-            .map(MemberResponseDto::of)
-            .toList();
-        return ResponseEntity.ok(members);
-    }
-	
-    @Operation(summary = "회원 정보 수정", description = "userId에 해당하는 회원 정보를 수정합니다.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "수정 성공"),
-        @ApiResponse(responseCode = "400", description = "유효하지 않은 입력값"),
-        @ApiResponse(responseCode = "404", description = "회원 없음")
-    })
-    @PutMapping("/{userId}")
-    public ResponseEntity<?> updateMember(
-        @Parameter(description = "수정할 회원 ID", required = true)
-        @PathVariable Long userId,
-        @Valid @RequestBody MemberUpdateRequestDto requestDto,
-        BindingResult bindingResult
-    ) {
-        if (bindingResult.hasErrors()) {
-            String message = extractFirstErrorMessage(bindingResult);
-            return ResponseEntity.badRequest()
-                .body(java.util.Map.of("message", message));
-        }
-        Member updatedMember = memberAuthService.updateMember(userId, requestDto);
-        return ResponseEntity.ok(MemberResponseDto.of(updatedMember));
-    }
-    
-    @Operation(summary = "회원 탈퇴", description = "userId에 해당하는 회원을 삭제합니다.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "삭제 성공"),
-        @ApiResponse(responseCode = "404", description = "회원 없음")
-    })
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteMember(
-        @Parameter(description = "삭제할 회원 ID", required = true)
-        @PathVariable Long userId
-    ) {
-        memberAuthService.deleteMember(userId);
-        return ResponseEntity.noContent().build();
-    }
-    
-    
-    
+
+	@Operation(summary = "회원 단건 조회", description = "userId로 특정 회원 정보를 조회합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "조회 성공"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "404", description = "회원 없음")
+	})
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.userId")
+	@GetMapping("/{userId}")
+	public ResponseEntity<MemberResponseDto> getMember(
+		@Parameter(description = "조회할 회원 ID", required = true)
+		@PathVariable Long userId
+	) {
+		Member member = memberAuthService.getMemberByUserId(userId);
+		return ResponseEntity.ok(MemberResponseDto.of(member));
+	}
+
+	@Operation(summary = "회원 전체 조회", description = "가입된 모든 회원 목록을 반환합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping
+	public ResponseEntity<List<MemberResponseDto>> getMemberList() {
+		List<MemberResponseDto> members = memberAuthService.getMemberList()
+			.stream()
+			.map(MemberResponseDto::of)
+			.toList();
+		return ResponseEntity.ok(members);
+	}
+
+	@Operation(summary = "회원 정보 수정", description = "userId에 해당하는 회원 정보를 수정합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "수정 성공"),
+		@ApiResponse(responseCode = "400", description = "유효하지 않은 입력값"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "404", description = "회원 없음")
+	})
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.userId")
+	@PutMapping("/{userId}")
+	public ResponseEntity<?> updateMember(
+		@Parameter(description = "수정할 회원 ID", required = true)
+		@PathVariable Long userId,
+		@Valid @RequestBody MemberUpdateRequestDto requestDto,
+		BindingResult bindingResult,
+		Authentication authentication
+	) {
+		if (bindingResult.hasErrors()) {
+			String message = extractFirstErrorMessage(bindingResult);
+			return ResponseEntity.badRequest()
+				.body(java.util.Map.of("message", message));
+		}
+		memberAuthService.updateMember(userId, requestDto);
+
+		String role = authentication.getAuthorities().stream()
+			.findFirst()
+			.map(a -> a.getAuthority())
+			.orElse("ROLE_USER");
+
+		String redirectUrl = role.equals("ROLE_ADMIN") ? "/admin/mypage" : "/mypage";
+		return ResponseEntity.ok(java.util.Map.of("redirectUrl", redirectUrl));
+	}
+
+	@Operation(summary = "회원 탈퇴", description = "userId에 해당하는 회원을 삭제합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "삭제 성공"),
+		@ApiResponse(responseCode = "403", description = "권한 없음"),
+		@ApiResponse(responseCode = "404", description = "회원 없음")
+	})
+
+	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.userId")
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<Void> deleteMember(
+		@Parameter(description = "삭제할 회원 ID", required = true)
+		@PathVariable Long userId
+	) {
+		memberAuthService.deleteMember(userId);
+		return ResponseEntity.noContent().build();
+	}
+
 	private String extractFirstErrorMessage(BindingResult bindingResult) {
 		FieldError fieldError = bindingResult.getFieldError();
 		return fieldError != null ? fieldError.getDefaultMessage() : "회원가입 입력값을 확인해주세요.";
