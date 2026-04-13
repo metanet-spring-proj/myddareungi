@@ -14,6 +14,4 @@ public interface INotificationService {
     void deleteById(long notificationId);
     
     void insert(long userId, String notificationType, String message, long fileId );
-    
-    void setStatus(long fileId ,String status);
 }

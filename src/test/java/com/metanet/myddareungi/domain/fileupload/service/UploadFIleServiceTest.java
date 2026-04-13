@@ -2,6 +2,7 @@ package com.metanet.myddareungi.domain.fileupload.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -73,7 +75,7 @@ public class UploadFIleServiceTest {
 	}
 
 	@Test
-	@DisplayName("reviewFile() - 처리 후 알림(insert, setStatus)이 각 1회씩 호출된다")
+	@DisplayName("reviewFile() - 처리 후 승인 알림이 1회 호출된다")
 	void reviewFile_알림_호출확인() {
 		// given
 		UploadFile file = new UploadFile();
@@ -87,8 +89,28 @@ public class UploadFIleServiceTest {
 		// then
 		verify(notificationService, times(1))
 		.insert(10L, "APPROVED", "파일이 [APPROVED] 처리 되었습니다.", 1L);
-		verify(notificationService, times(1))
-		.setStatus(1L, "APPROVED");
+	}
+
+	@Test
+	@DisplayName("reviewFile() - 파일 상태 저장 후 승인 알림이 생성된다")
+	void reviewFile_파일저장후_알림생성() {
+		// given
+		UploadFile file = new UploadFile();
+		file.setFileId(1L);
+		file.setUploaderId(10L);
+		when(uploadFileRepository.getFile(1L)).thenReturn(file);
+
+		// when
+		uploadFileService.reviewFile(1L, "APPROVED", 99L);
+
+		// then
+		InOrder inOrder = inOrder(uploadFileRepository, notificationService);
+		inOrder.verify(uploadFileRepository).reviewFile(argThat(f ->
+				f.getFileId() == 1L &&
+				f.getStatus().equals("APPROVED") &&
+				f.getReviewedBy() == 99L));
+		inOrder.verify(notificationService).insert(
+				10L, "APPROVED", "파일이 [APPROVED] 처리 되었습니다.", 1L);
 	}
 
 	@Test

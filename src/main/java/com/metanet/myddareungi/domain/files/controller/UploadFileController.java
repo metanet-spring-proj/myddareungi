@@ -1,9 +1,5 @@
 package com.metanet.myddareungi.domain.files.controller;
 
-import com.metanet.myddareungi.config.CustomUserDetails;
-import com.metanet.myddareungi.domain.admin.service.AdminService;
-import org.springframework.security.core.Authentication;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -13,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
@@ -20,8 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.metanet.myddareungi.config.CustomUserDetails;
+import com.metanet.myddareungi.domain.admin.service.AdminService;
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.service.IUploadFileService;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
@@ -93,8 +92,7 @@ public class UploadFileController {
 
 			//알림 생성
 			notificationService.insert(
-//					userDetails.getUserId(),
-					1,
+					userDetails.getUserId(),
 					"FILE UPLOAD", 
 					"CSV파일이 업로드 되었습니다.",
 					uploadFileService.getLastFileId());
@@ -217,7 +215,7 @@ public class UploadFileController {
 			long adminId = userDetails.getUserId();
 
 			uploadFileService.reviewFile(fileId, "REJECTED", adminId);
-			return ResponseEntity.ok("파일 REJECTE 처리 완료");
+			return ResponseEntity.ok("파일 REJECTED 처리 완료");
 
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

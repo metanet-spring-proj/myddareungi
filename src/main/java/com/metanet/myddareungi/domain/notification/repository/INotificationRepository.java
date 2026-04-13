@@ -19,10 +19,4 @@ public interface INotificationRepository {
     void deleteById(long notificationId);
     
     void insert(Notification notification);
-    
-    
-    Notification findByFileId(long fileId);
-    
-    void setStatus(@Param("status") String status,
-    		@Param("notificationId") long notificationId);
 }

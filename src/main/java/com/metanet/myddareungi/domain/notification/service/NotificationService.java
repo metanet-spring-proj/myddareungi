@@ -2,7 +2,6 @@ package com.metanet.myddareungi.domain.notification.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.metanet.myddareungi.domain.notification.model.Notification;
@@ -60,12 +59,6 @@ public class NotificationService implements INotificationService {
 
 		// SSE 실시간 전송
 		sseEmitterService.sendToUser(userId, notification);
-	}
-
-	@Override
-	public void setStatus(long fileId, String status) {
-		Notification notification = notificationRepository.findByFileId(fileId);
-		notificationRepository.setStatus(status, notification.getNotificationId());
 	}
 
 }

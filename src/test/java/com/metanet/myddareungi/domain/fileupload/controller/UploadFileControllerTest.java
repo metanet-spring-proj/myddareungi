@@ -35,6 +35,7 @@ import com.metanet.myddareungi.domain.notification.service.INotificationService;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static
 org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -70,7 +71,7 @@ public class UploadFileControllerTest {
     /** CustomUserDetails 기반 인증 객체 생성 헬퍼 */
     private Authentication customAuth() {
         CustomUserDetails userDetails = new CustomUserDetails(
-                1L, "testuser", "password", List.of());
+                23L, "testuser", "password", List.of());
         return new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
     }
@@ -94,6 +95,12 @@ public class UploadFileControllerTest {
                         .with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("파일 업로드 성공"));
+
+        verify(notificationService).insert(
+                eq(23L),
+                eq("FILE UPLOAD"),
+                eq("CSV파일이 업로드 되었습니다."),
+                eq(1L));
     }
     
     
@@ -158,9 +165,9 @@ public class UploadFileControllerTest {
     void getMyFiles_200() throws Exception {
         // given
         UploadFile uploadFile = new UploadFile();
-        uploadFile.setUploaderId(1L);
+        uploadFile.setUploaderId(23L);
         uploadFile.setFileName("my.csv");
-        when(uploadFileService.getAllFilesByUploaderId(1L)).thenReturn(List.of(uploadFile));
+        when(uploadFileService.getAllFilesByUploaderId(23L)).thenReturn(List.of(uploadFile));
 
         // when & then
         mockMvc.perform(get("/api/files/my")
@@ -243,7 +250,7 @@ public class UploadFileControllerTest {
     @DisplayName("PATCH /api/files/{fileId}/approve - 승인 성공 - 200 OK")
     void approveFile_성공_200() throws Exception {
         // given
-        doNothing().when(uploadFileService).reviewFile(1L, "APPROVED", 1L);
+        doNothing().when(uploadFileService).reviewFile(1L, "APPROVED", 23L);
 
         // when & then
         mockMvc.perform(patch("/api/files/1/approve")
@@ -258,7 +265,7 @@ public class UploadFileControllerTest {
     void approveFile_없음_404() throws Exception {
         // given
         doThrow(new IllegalArgumentException("파일을 찾을 수 없습니다."))
-                .when(uploadFileService).reviewFile(999L, "APPROVED", 1L);
+                .when(uploadFileService).reviewFile(999L, "APPROVED", 23L);
 
         // when & then
         mockMvc.perform(patch("/api/files/999/approve")
@@ -273,14 +280,14 @@ public class UploadFileControllerTest {
     @DisplayName("PATCH /api/files/{fileId}/reject - 거절 성공 - 200 OK")
     void rejectFile_성공_200() throws Exception {
         // given
-        doNothing().when(uploadFileService).reviewFile(1L, "REJECTED", 1L);
+        doNothing().when(uploadFileService).reviewFile(1L, "REJECTED", 23L);
 
         // when & then
         mockMvc.perform(patch("/api/files/1/reject")
                         .with(authentication(customAuth()))
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("파일 REJECTE 처리 완료"));
+                .andExpect(content().string("파일 REJECTED 처리 완료"));
     }
 
     @Test
@@ -288,7 +295,7 @@ public class UploadFileControllerTest {
     void rejectFile_없음_404() throws Exception {
         // given
         doThrow(new IllegalArgumentException("파일을 찾을 수 없습니다."))
-                .when(uploadFileService).reviewFile(999L, "REJECTED", 1L);
+                .when(uploadFileService).reviewFile(999L, "REJECTED", 23L);
 
         // when & then
         mockMvc.perform(patch("/api/files/999/reject")

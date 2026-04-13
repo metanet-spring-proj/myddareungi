@@ -56,23 +56,4 @@ public class NotificationServiceTest {
         // then
         verify(sseEmitterService, times(1)).sendToUser(eq(10L), any(Notification.class));
     }
-
-    //setStatus()
-
-    @Test
-    @DisplayName("setStatus() - 올바른 notificationId로 상태가 변경")
-    void setStatus_정상처리() {
-        // given
-        Notification notification = new Notification();
-        notification.setNotificationId(5L);
-        when(notificationRepository.findByFileId(1L)).thenReturn(notification);
-
-        // when
-        notificationService.setStatus(1L, "APPROVED");
-
-        // then
-        verify(notificationRepository).setStatus("APPROVED", 5L);
-    }
-	
 }
-
