@@ -123,5 +123,9 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
         return member;
 	}
 
+	public List<Member> getAllAdmin(){
+		return memberMapper.getAdminMemberList();
+	}
+
 
 }

@@ -82,7 +82,6 @@
 		district,
 		SUM(total_use_cnt) AS total_use_cnt
 		FROM bike_district_summary
-		WHERE district IS NOT NULL
 		GROUP BY district
 		)
 		ORDER BY total_use_cnt DESC
