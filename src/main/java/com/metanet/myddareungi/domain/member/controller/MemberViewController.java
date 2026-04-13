@@ -77,7 +77,7 @@ public class MemberViewController {
 	@GetMapping("/mypage")
 	public String myPage(Authentication authentication, Model model,
 						 @RequestParam(defaultValue = "0") int page,
-						 @RequestParam(defaultValue = "5") int size) {
+						 @RequestParam(defaultValue = "10") int size) {
 		if (!isAuthenticated(authentication)) {
 			return "redirect:/login";
 		}
