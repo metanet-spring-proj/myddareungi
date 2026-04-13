@@ -114,4 +114,13 @@
         WHERE USER_ID = #{userId}
     </update>
 
+    <!-- 관리자 회원 전체 조회-->
+    <select id="getAdminMemberList" resultType="Member">
+        SELECT USER_ID, LOGIN_ID, PASSWORD, USER_NAME,
+        EMAIL, ROLE, CREATED_AT, UPDATED_AT, QUESTION, ANSWER
+        FROM USERS
+        WHERE ROLE= 'ADMIN'
+        ORDER BY CREATED_AT DESC
+    </select>
+
 </mapper>

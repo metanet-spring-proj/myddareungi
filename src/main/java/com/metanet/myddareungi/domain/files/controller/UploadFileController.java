@@ -2,6 +2,9 @@ package com.metanet.myddareungi.domain.files.controller;
 
 import com.metanet.myddareungi.config.CustomUserDetails;
 import com.metanet.myddareungi.domain.admin.service.AdminService;
+import com.metanet.myddareungi.domain.member.model.Member;
+import com.metanet.myddareungi.domain.member.service.MemberAuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 
 import java.io.File;
@@ -38,9 +41,11 @@ import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
 @RestController
 @RequestMapping("/api/files")
+@RequiredArgsConstructor
 public class UploadFileController {
 
     private final AdminService adminService;
+	private final MemberAuthService memberAuthService;
 
 	private static final Logger log = LoggerFactory.getLogger(UploadFileController.class);
 
@@ -53,9 +58,6 @@ public class UploadFileController {
 	@Value("${file.upload-dir}")
 	private String uploadDir;
 
-    UploadFileController(AdminService adminService) {
-        this.adminService = adminService;
-    }
 	
 	@PostMapping
 	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Authentication authentication) {
@@ -91,13 +93,18 @@ public class UploadFileController {
 			System.out.println("파일 DB 저장 시작: " + originalFileName);
 			uploadFileService.uploadFile(uploadFile);
 
-			//알림 생성
-			notificationService.insert(
-//					userDetails.getUserId(),
-					1,
-					"FILE UPLOAD", 
-					"CSV파일이 업로드 되었습니다.",
-					uploadFileService.getLastFileId());
+			//전체 관리자
+			List<Member> adminMembers = memberAuthService.getAllAdmin();
+
+			for(Member admin : adminMembers){
+				// 관리자에 알림 생성
+				notificationService.insert(
+						admin.getUserId(),
+						"FILE UPLOAD",
+						"CSV파일이 업로드 되었습니다.",
+						uploadFileService.getLastFileId());
+			}
+
 			
 			return ResponseEntity.status(HttpStatus.CREATED).body("파일 업로드 성공");
 		} catch (Exception e) {

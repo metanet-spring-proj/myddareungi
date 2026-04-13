@@ -33,4 +33,6 @@ public interface MemberMapper {
 
 	int updatePasswordByUserId(@Param("userId") Long userId, @Param("password") String password);
 
+    //전체 관리자 조회
+    List<Member> getAdminMemberList();
 }

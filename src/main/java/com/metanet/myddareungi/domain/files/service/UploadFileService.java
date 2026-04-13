@@ -58,13 +58,14 @@ public class UploadFileService implements IUploadFileService {
 	    file.setStatus(status);
 	    file.setReviewedBy(reviewedBy);
 	    
+	    notificationService.setStatus(fileId, status);
+
 	    notificationService.insert(
 				file.getUploaderId(),
 				status, 
 				"파일이 [" + status + "] 처리 되었습니다.",
 				file.getFileId());
-	    
-	    notificationService.setStatus(fileId, status);
+
 	    uploadFileRepository.reviewFile(file);
 	}
 
