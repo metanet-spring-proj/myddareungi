@@ -21,8 +21,10 @@ public interface MemberMapper {
 	//회원 단건 조회
     Member getMemberByUserId(@Param("userId") Long userId);
     
-    //회원 전체 조회 
+	//회원 전체 조회 
     List<Member> getMemberList();
+
+    List<Member> getMembersByRole(@Param("role") String role);
     
     //회원 정보 수정
     int updateMember(Member member);

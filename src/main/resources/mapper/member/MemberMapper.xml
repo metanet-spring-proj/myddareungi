@@ -86,6 +86,14 @@
         FROM USERS
         ORDER BY CREATED_AT DESC
     </select>
+
+    <select id="getMembersByRole" parameterType="string" resultType="Member">
+        SELECT USER_ID, LOGIN_ID, PASSWORD, USER_NAME,
+               EMAIL, ROLE, CREATED_AT, UPDATED_AT, QUESTION, ANSWER
+        FROM USERS
+        WHERE ROLE = #{role}
+        ORDER BY USER_ID ASC
+    </select>
       <!-- 수정 -->
     <update id="updateMember" parameterType="Member">
         UPDATE USERS

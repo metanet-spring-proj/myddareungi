@@ -24,17 +24,17 @@ import com.metanet.myddareungi.config.CustomUserDetails;
 import com.metanet.myddareungi.config.JwtCookieUtils;
 import com.metanet.myddareungi.config.JwtTokenProvider;
 import com.metanet.myddareungi.config.SecurityConfig;
-import com.metanet.myddareungi.domain.admin.service.AdminService;
 import com.metanet.myddareungi.domain.files.controller.UploadFileController;
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.service.IUploadFileService;
-import com.metanet.myddareungi.domain.files.service.UploadFileService;
+import com.metanet.myddareungi.domain.member.model.Member;
 import com.metanet.myddareungi.domain.member.service.MemberAuthService;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static
@@ -64,9 +64,6 @@ public class UploadFileControllerTest {
 
     @MockitoBean
     MemberAuthService memberAuthService;
-
-    @MockitoBean
-    AdminService adminService;
     
     /** CustomUserDetails 기반 인증 객체 생성 헬퍼 */
     private Authentication customAuth() {
@@ -84,6 +81,9 @@ public class UploadFileControllerTest {
         when(uploadFileService.getLastFileId()).thenReturn(1L);
         doNothing().when(uploadFileService).uploadFile(any());
         doNothing().when(notificationService).insert(anyLong(), anyString(), anyString(), anyLong());
+        when(memberAuthService.getMembersByRole("ADMIN")).thenReturn(List.of(
+                Member.builder().userId(22L).role("ADMIN").build(),
+                Member.builder().userId(24L).role("ADMIN").build()));
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.csv", "text/csv", "col1,col2\nval1,val2".getBytes());
@@ -97,6 +97,16 @@ public class UploadFileControllerTest {
                 .andExpect(content().string("파일 업로드 성공"));
 
         verify(notificationService).insert(
+                eq(22L),
+                eq("FILE UPLOAD"),
+                eq("CSV파일이 업로드 되었습니다."),
+                eq(1L));
+        verify(notificationService).insert(
+                eq(24L),
+                eq("FILE UPLOAD"),
+                eq("CSV파일이 업로드 되었습니다."),
+                eq(1L));
+        verify(notificationService, never()).insert(
                 eq(23L),
                 eq("FILE UPLOAD"),
                 eq("CSV파일이 업로드 되었습니다."),

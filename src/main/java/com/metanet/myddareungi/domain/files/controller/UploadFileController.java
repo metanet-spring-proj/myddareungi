@@ -30,16 +30,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.metanet.myddareungi.config.CustomUserDetails;
-import com.metanet.myddareungi.domain.admin.service.AdminService;
 import com.metanet.myddareungi.domain.files.model.UploadFile;
 import com.metanet.myddareungi.domain.files.service.IUploadFileService;
+import com.metanet.myddareungi.domain.member.model.Member;
+import com.metanet.myddareungi.domain.member.service.MemberAuthService;
 import com.metanet.myddareungi.domain.notification.service.INotificationService;
 
 @RestController
 @RequestMapping("/api/files")
 public class UploadFileController {
 
-    private final AdminService adminService;
+    private final MemberAuthService memberAuthService;
 
 	private static final Logger log = LoggerFactory.getLogger(UploadFileController.class);
 
@@ -49,11 +50,11 @@ public class UploadFileController {
 	@Autowired
 	private INotificationService notificationService;
 
-	@Value("${file.upload-dir}")
+    @Value("${file.upload-dir}")
 	private String uploadDir;
 
-    UploadFileController(AdminService adminService) {
-        this.adminService = adminService;
+    UploadFileController(MemberAuthService memberAuthService) {
+        this.memberAuthService = memberAuthService;
     }
 	
 	@PostMapping
@@ -90,12 +91,14 @@ public class UploadFileController {
 			System.out.println("파일 DB 저장 시작: " + originalFileName);
 			uploadFileService.uploadFile(uploadFile);
 
-			//알림 생성
-			notificationService.insert(
-					userDetails.getUserId(),
-					"FILE UPLOAD", 
-					"CSV파일이 업로드 되었습니다.",
-					uploadFileService.getLastFileId());
+			long uploadedFileId = uploadFileService.getLastFileId();
+			for (Member admin : memberAuthService.getMembersByRole("ADMIN")) {
+				notificationService.insert(
+						admin.getUserId(),
+						"FILE UPLOAD",
+						"CSV파일이 업로드 되었습니다.",
+						uploadedFileId);
+			}
 			
 			return ResponseEntity.status(HttpStatus.CREATED).body("파일 업로드 성공");
 		} catch (Exception e) {

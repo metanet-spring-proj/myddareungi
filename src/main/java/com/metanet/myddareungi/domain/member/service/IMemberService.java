@@ -8,6 +8,7 @@ import com.metanet.myddareungi.domain.member.model.Member;
 public interface IMemberService {
 	Member getMemberByUserId(Long userId);
 	List<Member> getMemberList();
+	List<Member> getMembersByRole(String role);
 	Member updateMember(Long userId, MemberUpdateRequestDto dto);
 	void deleteMember(Long userId);
 }

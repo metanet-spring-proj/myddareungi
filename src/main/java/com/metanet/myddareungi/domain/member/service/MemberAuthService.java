@@ -87,6 +87,11 @@ public class MemberAuthService implements UserDetailsService, IMemberService {
 
 	}
 
+	@Override
+	public List<Member> getMembersByRole(String role) {
+		return memberMapper.getMembersByRole(role);
+	}
+
 	// 회원 정보 수정
 	@Override
 	public Member updateMember(Long userId, MemberUpdateRequestDto dto) {
