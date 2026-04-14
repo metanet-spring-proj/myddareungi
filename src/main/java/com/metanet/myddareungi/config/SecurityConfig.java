@@ -72,7 +72,12 @@ public class SecurityConfig {
 						.permitAll())
 				.formLogin(form -> form
 						.loginPage("/login")
-						.permitAll());
+						.permitAll())
+				.exceptionHandling(ex -> ex
+						.accessDeniedHandler((request, response, e) -> {
+							request.setAttribute("message", "접근 권한이 없습니다");
+							request.getRequestDispatcher("/error/denied").forward(request, response);
+						}));
 
 		jwtAuthenticationFilterProvider.ifAvailable(
 				filter -> http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class));
